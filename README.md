@@ -75,3 +75,39 @@ Version 0.1(beta):
 - 模型配置
 - 工具权限控制
 - Human-in-the-loop 确认机制
+
+
+
+## 技术栈
+
+### Frontend
+
+- Vue
+- TypeScript
+- Vite
+- Tailwind CSS
+- Monaco Editor
+- TanStack Query
+
+### Backend
+
+- Spring Boot 3
+- PostgreSQL
+- Redis
+- Docker Compose
+
+### AI Service
+
+- FastAPI
+- Pydantic
+- LangGraph
+
+### RAG
+
+- 关键词搜索 / ripgrep
+- Embedding
+- pgvector
+- Reranker
+
+
+
