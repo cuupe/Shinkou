@@ -1,0 +1,29 @@
+# system
+.DS_Store
+
+# env
+.env
+.env.local
+
+# node
+node_modules/
+dist/
+.next/
+
+# java
+target/
+*.class
+
+# python
+__pycache__/
+.venv/
+*.pyc
+
+# idea
+.idea/
+.vscode/
+
+# upload files
+data/
+uploads/
+storage/
