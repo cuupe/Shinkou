@@ -1,0 +1,33 @@
+spring:
+  application:
+    name: Shinkou
+
+  datasource:
+    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5432/Shinkou}
+    username: ${SPRING_DATASOURCE_USERNAME:hanasaki}
+    password: ${SPRING_DATASOURCE_PASSWORD:uzumymw1992cj_postgres}
+    driver-class-name: org.postgresql.Driver
+
+  data:
+    redis:
+      host: ${SPRING_DATA_REDIS_HOST:localhost}
+      port: ${SPRING_DATA_REDIS_PORT:6379}
+      database: ${SPRING_DATA_REDIS_DATABASE:0}
+      password: ${SPRING_DATA_REDIS_PASSWORD:}
+
+server:
+  port: 8080
+
+logging:
+  level:
+    root: INFO
+    com.cuupe.shinkou: DEBUG
+
+app:
+  jwt:
+    secret: ${APP_JWT_SECRET:fucking_this_damn_shit_son_of_a_bitch}
+    expires-in: 7200
+
+  auth:
+    login-fail-max-count: 5
+    login-fail-lock-seconds: 900

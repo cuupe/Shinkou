@@ -1,0 +1,92 @@
+﻿services:
+  postgres:
+    image: postgres:16
+    container_name: shinkou-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-test}
+      POSTGRES_USER: ${POSTGRES_USER:-test}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-test}
+      TZ: ${TZ:-Asia/Shanghai}
+    ports:
+      - "${POSTGRES_PORT:-5432}:5432"
+    volumes:
+      - shinkou_postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-test} -d ${POSTGRES_DB:-test}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - shinkou-network
+
+  redis:
+    image: redis:7-alpine
+    container_name: shinkou-redis
+    restart: unless-stopped
+    ports:
+      - "${REDIS_PORT:-6379}:6379"
+    volumes:
+      - shinkou_redis_data:/data
+    networks:
+      - shinkou-network
+
+  backend:
+    build:
+      context: ./Shinkou-backend
+      dockerfile: Dockerfile
+    container_name: shinkou-backend
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:${POSTGRES_PORT:-5432}/${POSTGRES_DB:-test}
+      SPRING_DATASOURCE_USERNAME: ${POSTGRES_USER:-test}
+      SPRING_DATASOURCE_PASSWORD: ${POSTGRES_PASSWORD:-test}
+      SPRING_DATA_REDIS_HOST: redis
+      SPRING_DATA_REDIS_PORT: ${REDIS_PORT:-6379}
+      SPRING_DATA_REDIS_DATABASE: ${REDIS_DB:-0}
+      APP_JWT_SECRET: ${APP_JWT_SECRET:?APP_JWT_SECRET must be at least 32 bytes for HS256 JWT signing}
+      TZ: ${TZ:-Asia/Shanghai}
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_started
+    networks:
+      - shinkou-network
+
+  frontend:
+    build:
+      context: ./Shinkou-web
+      dockerfile: Dockerfile
+    container_name: shinkou-web
+    restart: unless-stopped
+    ports:
+      - "${WEB_PORT:-3000}:80"
+    depends_on:
+      - backend
+    networks:
+      - shinkou-network
+
+  # AI service is not implemented yet. Uncomment when Shinkou-ai/app/main.py exposes a FastAPI app object.
+  # ai:
+  #   build:
+  #     context: ./Shinkou-ai
+  #     dockerfile: Dockerfile
+  #   container_name: shinkou-ai
+  #   restart: unless-stopped
+  #   ports:
+  #     - "8000:8000"
+  #   depends_on:
+  #     - backend
+  #   networks:
+  #     - shinkou-network
+
+volumes:
+  shinkou_postgres_data:
+  shinkou_redis_data:
+
+networks:
+  shinkou-network:
+    driver: bridge

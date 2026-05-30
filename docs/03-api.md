@@ -2,7 +2,7 @@
 
 ## 1. 设计原则
 
-DevMind 是企业内部研发平台，API 设计需要支持：
+Shinkou 是企业内部研发平台，API 设计需要支持：
 
 ```text
 企业邮箱 + 密码登录
@@ -78,23 +78,108 @@ MVP 可以直接返回数据对象。
 
 ### 2.5 常见错误码
 
-| code | 说明 |
-|---|---|
-| `AUTH_INVALID_CREDENTIALS` | 企业邮箱或密码错误 |
-| `AUTH_ACCOUNT_NOT_ACTIVATED` | 账号尚未激活 |
-| `AUTH_ACCOUNT_DISABLED` | 账号已被禁用 |
-| `AUTH_TOKEN_INVALID` | Token 无效 |
-| `AUTH_TOKEN_EXPIRED` | Token 已过期 |
-| `INVITATION_NOT_FOUND` | 邀请不存在 |
-| `INVITATION_EXPIRED` | 邀请已过期 |
-| `INVITATION_REVOKED` | 邀请已撤销 |
-| `INVITATION_ALREADY_ACCEPTED` | 邀请已被使用 |
-| `WORKSPACE_ACCESS_DENIED` | 无权访问该工作区 |
-| `PROJECT_NOT_FOUND` | 项目不存在 |
-| `FILE_NOT_FOUND` | 文件不存在 |
-| `VALIDATION_ERROR` | 请求参数错误 |
+## 通用类
 
----
+| code                    | 作用                                                         |
+| ----------------------- | ------------------------------------------------------------ |
+| `SUCCESS`               | 请求成功。接口正常处理并返回数据                             |
+| `FAILURE`               | 通用失败。一般不建议大量使用，只有无法归类时使用             |
+| `VALIDATION_ERROR`      | 请求参数错误，比如必填字段为空、邮箱格式不正确、密码长度不足 |
+| `INTERNAL_SERVER_ERROR` | 服务端未知异常，比如代码异常、数据库异常、未预期错误         |
+
+------
+
+## Auth 认证类
+
+| code                         | 作用                                                         |
+| ---------------------------- | ------------------------------------------------------------ |
+| `AUTH_INVALID_CREDENTIALS`   | 企业邮箱或密码错误。登录失败时使用                           |
+| `AUTH_ACCOUNT_NOT_ACTIVATED` | 账号尚未激活。用户存在但状态还是 `PENDING`                   |
+| `AUTH_ACCOUNT_DISABLED`      | 账号已被禁用。用户状态是 `DISABLED`                          |
+| `AUTH_ACCOUNT_LOCKED`        | 账号已锁定。比如连续登录失败过多后临时锁定                   |
+| `AUTH_TOKEN_INVALID`         | Token 无效。比如 Token 格式错误、签名错误、伪造 Token        |
+| `AUTH_TOKEN_EXPIRED`         | Token 已过期。前端应跳转登录页或提示重新登录                 |
+| `AUTH_UNAUTHORIZED`          | 未登录或没有认证信息。比如请求没有携带 `Authorization` Header |
+
+区别：
+
+```
+AUTH_UNAUTHORIZED      没带 Token
+AUTH_TOKEN_INVALID     带了 Token，但 Token 不合法
+AUTH_TOKEN_EXPIRED     带了 Token，但 Token 过期
+```
+
+------
+
+## Invitation 邀请类
+
+| code                          | 作用                                    |
+| ----------------------------- | --------------------------------------- |
+| `INVITATION_NOT_FOUND`        | 邀请不存在。根据 token 查询不到邀请记录 |
+| `INVITATION_EXPIRED`          | 邀请已过期。`expires_at` 小于当前时间   |
+| `INVITATION_REVOKED`          | 邀请已撤销。邀请状态是 `REVOKED`        |
+| `INVITATION_ALREADY_ACCEPTED` | 邀请已被使用。邀请状态是 `ACCEPTED`     |
+
+激活账号时常用这些错误码。
+
+------
+
+## Workspace 工作区类
+
+| code                      | 作用                                                         |
+| ------------------------- | ------------------------------------------------------------ |
+| `WORKSPACE_NOT_FOUND`     | 工作区不存在                                                 |
+| `WORKSPACE_ACCESS_DENIED` | 当前用户无权访问该工作区。比如不是该 workspace 的 ACTIVE 成员 |
+| `WORKSPACE_DISABLED`      | 工作区已被禁用，不能继续访问或操作                           |
+
+其中 `WORKSPACE_ACCESS_DENIED` 很重要。所有 `/api/workspaces/{workspaceId}/...` 接口都要校验当前用户是否属于该工作区。
+
+------
+
+## Project 项目类
+
+| code                     | 作用                               |
+| ------------------------ | ---------------------------------- |
+| `PROJECT_NOT_FOUND`      | 项目不存在，或项目不属于当前工作区 |
+| `PROJECT_ACCESS_DENIED`  | 当前用户无权访问或操作该项目       |
+| `PROJECT_ALREADY_EXISTS` | 同一工作区下项目 code 已存在       |
+
+一般创建项目时，如果 `code` 重复，用：
+
+```
+PROJECT_ALREADY_EXISTS
+```
+
+查询、上传文件、分析项目时找不到项目，用：
+
+```
+PROJECT_NOT_FOUND
+```
+
+------
+
+## File 文件类
+
+| code                 | 作用                                                       |
+| -------------------- | ---------------------------------------------------------- |
+| `FILE_NOT_FOUND`     | 文件不存在。比如根据 path 找不到项目文件                   |
+| `FILE_UPLOAD_FAILED` | 文件上传失败。比如 ZIP 保存失败、文件为空、上传中断        |
+| `FILE_READ_FAILED`   | 文件读取失败。比如编码问题、权限问题、磁盘读取异常         |
+| `FILE_SEARCH_FAILED` | 文件内容搜索失败。比如搜索工具异常                         |
+| `FILE_INVALID_PATH`  | 文件路径非法。比如路径穿越 `../`，或访问了项目目录外的文件 |
+
+`FILE_INVALID_PATH` 很关键，上传 ZIP 和读取文件时都要防止路径穿越。
+
+------
+
+## Agent / AI 类
+
+| code                        | 作用                                                   |
+| --------------------------- | ------------------------------------------------------ |
+| `AGENT_SESSION_NOT_FOUND`   | AI 分析会话不存在                                      |
+| `AGENT_ANALYZE_FAILED`      | AI 分析失败。比如 Python AI 服务返回失败、分析流程异常 |
+| `AGENT_SERVICE_UNAVAILABLE` | Python AI 服务不可用。比如连接超时、服务未启动         |
+| `AGENT_TOOL_CALL_FAILED`    | Agent 工具调用失败。比如搜索文件失败、读取文件片段失败 |
 
 # 3. Auth 认证接口
 
@@ -136,8 +221,8 @@ POST /api/auth/login
   "workspaces": [
     {
       "id": 1,
-      "name": "DevMind Engineering",
-      "code": "devmind-engineering",
+      "name": "Shinkou Engineering",
+      "code": "Shinkou-engineering",
       "role": "ADMIN",
       "status": "ACTIVE"
     },
@@ -195,8 +280,8 @@ Authorization: Bearer <accessToken>
   "workspaces": [
     {
       "id": 1,
-      "name": "DevMind Engineering",
-      "code": "devmind-engineering",
+      "name": "Shinkou Engineering",
+      "code": "Shinkou-engineering",
       "role": "ADMIN",
       "status": "ACTIVE"
     },
@@ -256,8 +341,8 @@ GET /api/invitations/{token}
   "expiresAt": "2026-06-18T10:00:00",
   "workspace": {
     "id": 1,
-    "name": "DevMind Engineering",
-    "code": "devmind-engineering"
+    "name": "Shinkou Engineering",
+    "code": "Shinkou-engineering"
   }
 }
 ```
@@ -314,16 +399,16 @@ POST /api/auth/activate
   "workspaces": [
     {
       "id": 1,
-      "name": "DevMind Engineering",
-      "code": "devmind-engineering",
+      "name": "Shinkou Engineering",
+      "code": "Shinkou-engineering",
       "role": "ADMIN",
       "status": "ACTIVE"
     }
   ],
   "activatedWorkspace": {
     "id": 1,
-    "name": "DevMind Engineering",
-    "code": "devmind-engineering",
+    "name": "Shinkou Engineering",
+    "code": "Shinkou-engineering",
     "role": "ADMIN"
   }
 }
@@ -348,6 +433,28 @@ POST /api/auth/activate
 
 ---
 
+# Redis Key 设计
+
+```
+auth:token:{userId}:{tokenId}
+auth:blacklist:{tokenId}
+auth:login_fail:{email}
+auth:login_lock:{email}
+```
+
+建议 token 里放一个 `jti`，也就是 tokenId。
+
+| Key                             | 作用                      | TTL              |
+| ------------------------------- | ------------------------- | ---------------- |
+| `auth:token:{userId}:{tokenId}` | 记录用户当前 token 会话   | token 有效期     |
+| `auth:blacklist:{tokenId}`      | 退出登录后的 token 黑名单 | token 剩余有效期 |
+| `auth:login_fail:{email}`       | 登录失败次数              | 锁定窗口期       |
+| `auth:login_lock:{email}`       | 登录临时锁定标记          | 锁定时间         |
+
+
+
+
+
 # 4. Workspace 工作区接口
 
 ## 4.1 获取我的工作区列表
@@ -367,9 +474,9 @@ Authorization: Bearer <accessToken>
 [
   {
     "id": 1,
-    "name": "DevMind Engineering",
-    "code": "devmind-engineering",
-    "description": "DevMind 示例研发团队",
+    "name": "Shinkou Engineering",
+    "code": "Shinkou-engineering",
+    "description": "Shinkou 示例研发团队",
     "role": "ADMIN",
     "status": "ACTIVE"
   },
@@ -398,9 +505,9 @@ Authorization: Bearer <accessToken>
 ```json
 {
   "id": 1,
-  "name": "DevMind Engineering",
-  "code": "devmind-engineering",
-  "description": "DevMind 示例研发团队",
+  "name": "Shinkou Engineering",
+  "code": "Shinkou-engineering",
+  "description": "Shinkou 示例研发团队",
   "status": "ACTIVE",
   "currentUserRole": "ADMIN",
   "createdAt": "2026-05-18T10:00:00",

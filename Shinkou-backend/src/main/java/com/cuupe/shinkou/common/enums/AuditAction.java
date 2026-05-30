@@ -1,0 +1,31 @@
+package com.cuupe.shinkou.common.enums;
+
+public enum AuditAction {
+    // Auth 认证相关
+    AUTH_LOGIN_SUCCESS,
+    AUTH_LOGIN_FAILED,
+    AUTH_LOGOUT,
+    AUTH_ACTIVATE_SUCCESS,
+    AUTH_ACTIVATE_FAILED,
+
+    // Invitation 邀请相关
+    INVITATION_CREATE,
+    INVITATION_REVOKE,
+    INVITATION_ACCEPT,
+
+    // Workspace 成员相关
+    WORKSPACE_MEMBER_ADD,
+    WORKSPACE_MEMBER_REMOVE,
+    WORKSPACE_MEMBER_ROLE_CHANGE,
+
+    // Project 项目相关
+    PROJECT_CREATE,
+    PROJECT_UPDATE,
+    PROJECT_DELETE,
+    PROJECT_UPLOAD_ZIP,
+
+    // Agent / AI 分析相关
+    AGENT_ANALYZE_START,
+    AGENT_ANALYZE_SUCCESS,
+    AGENT_ANALYZE_FAILED
+}

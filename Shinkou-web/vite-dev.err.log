@@ -1,0 +1,67 @@
+[2m13:13:33[22m [33m[1m[vite][22m[39m [33m[2m(client)[22m[39m [2m[console.warn] [22m[Vue warn]: injection "VUE_QUERY_CLIENT" not found. 
+  at <LoginPage onVnodeUnmounted=fn<onVnodeUnmounted> ref=Ref< undefined > > 
+  at <RouterView> 
+  at <App>
+[2m13:13:33[22m [33m[1m[vite][22m[39m [33m[2m(client)[22m[39m [2m[console.warn] [22m[Vue warn]: Unhandled error during execution of setup function 
+  at <LoginPage onVnodeUnmounted=fn<onVnodeUnmounted> ref=Ref< undefined > > 
+  at <RouterView> 
+  at <App>
+[2m13:13:33[22m [33m[1m[vite][22m[39m [33m[2m(client)[22m[39m [2m[console.warn] [22m[Vue warn]: Unhandled error during execution of component update 
+  at <RouterView> 
+  at <App>
+[2m13:13:33[22m [31m[1m[vite][22m[39m [31m[2m(client)[22m[39m [31m[Unhandled rejection] [1mError[22m: No 'queryClient' found in Vue context, use 'VueQueryPlugin' to properly initialize the library.
+[39m > useQueryClient node_modules/@tanstack/vue-query/build/modern/useQueryClient.js:13:10
+ > useMutation node_modules/@tanstack/vue-query/build/modern/useMutation.js:24:32
+ > setup src/pages/LoginPage.vue:15:22
+    13 |  const showPassword = ref(false);
+    14 |  
+    15 |  const loginMutation = useMutation({
+       |                        ^
+    16 |    mutationFn: login,
+    17 |    onSuccess(response) {
+ > callWithErrorHandling node_modules/@vue/runtime-core/dist/runtime-core.esm-bundler.js:199:18
+ > setupStatefulComponent node_modules/@vue/runtime-core/dist/runtime-core.esm-bundler.js:8140:24
+ > setupComponent node_modules/@vue/runtime-core/dist/runtime-core.esm-bundler.js:8102:35
+ > mountComponent node_modules/@vue/runtime-core/dist/runtime-core.esm-bundler.js:6023:6
+ > processComponent node_modules/@vue/runtime-core/dist/runtime-core.esm-bundler.js:5989:8
+ > patch node_modules/@vue/runtime-core/dist/runtime-core.esm-bundler.js:5488:10
+ > ReactiveEffect.componentUpdateFn [as fn] node_modules/@vue/runtime-core/dist/runtime-core.esm-bundler.js:6217:8
+
+[2m13:13:52[22m [33m[1m[vite][22m[39m [33m[2m(client)[22m[39m [2m[console.warn] [22m[Vue warn]: Unhandled error during execution of scheduler flush 
+  at <LoginPage onVnodeUnmounted=fn<onVnodeUnmounted> ref=Ref< undefined > > 
+  at <RouterView> 
+  at <App>
+[2m13:13:52[22m [31m[1m[vite][22m[39m [31m[2m(client)[22m[39m [31m[Unhandled rejection] [1mTypeError[22m: Cannot read properties of null (reading 'flags')
+[39m > node_modules/@vue/runtime-core/dist/runtime-core.esm-bundler.js:537:27
+ > callWithErrorHandling node_modules/@vue/runtime-core/dist/runtime-core.esm-bundler.js:199:32
+ > flushJobs node_modules/@vue/runtime-core/dist/runtime-core.esm-bundler.js:408:8
+
+[2m13:13:52[22m [33m[1m[vite][22m[39m [33m[2m(client)[22m[39m [2m[console.warn] [22m[Vue warn]: injection "VUE_QUERY_CLIENT" not found. 
+  at <LoginPage onVnodeUnmounted=fn<onVnodeUnmounted> ref=Ref< undefined > > 
+  at <RouterView> 
+  at <App>
+[2m13:13:52[22m [33m[1m[vite][22m[39m [33m[2m(client)[22m[39m [2m[console.warn] [22m[Vue warn]: Unhandled error during execution of setup function 
+  at <LoginPage onVnodeUnmounted=fn<onVnodeUnmounted> ref=Ref< undefined > > 
+  at <RouterView> 
+  at <App>
+[2m13:13:52[22m [33m[1m[vite][22m[39m [33m[2m(client)[22m[39m [2m[console.warn] [22m[Vue warn]: Unhandled error during execution of component update 
+  at <RouterView> 
+  at <App>
+[2m13:13:52[22m [31m[1m[vite][22m[39m [31m[2m(client)[22m[39m [31m[Unhandled rejection] [1mError[22m: No 'queryClient' found in Vue context, use 'VueQueryPlugin' to properly initialize the library.
+[39m > useQueryClient node_modules/@tanstack/vue-query/build/modern/useQueryClient.js:13:10
+ > useMutation node_modules/@tanstack/vue-query/build/modern/useMutation.js:24:32
+ > setup src/pages/LoginPage.vue:20:22
+    18 |  const authStore = useAuthStore();
+    19 |  
+    20 |  const loginMutation = useMutation({
+       |                        ^
+    21 |    mutationFn: login,
+    22 |    onSuccess(response) {
+ > callWithErrorHandling node_modules/@vue/runtime-core/dist/runtime-core.esm-bundler.js:199:18
+ > setupStatefulComponent node_modules/@vue/runtime-core/dist/runtime-core.esm-bundler.js:8140:24
+ > setupComponent node_modules/@vue/runtime-core/dist/runtime-core.esm-bundler.js:8102:35
+ > mountComponent node_modules/@vue/runtime-core/dist/runtime-core.esm-bundler.js:6023:6
+ > processComponent node_modules/@vue/runtime-core/dist/runtime-core.esm-bundler.js:5989:8
+ > patch node_modules/@vue/runtime-core/dist/runtime-core.esm-bundler.js:5488:10
+ > ReactiveEffect.componentUpdateFn [as fn] node_modules/@vue/runtime-core/dist/runtime-core.esm-bundler.js:6217:8
+
