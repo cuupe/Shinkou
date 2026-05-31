@@ -13,6 +13,7 @@ import {
   Trash2,
 } from "lucide-vue-next";
 import { modelConfigApi } from "@/api/modelConfig.api";
+import UiSelect from "@/components/UiSelect.vue";
 import type { ModelConfig, ToolConfig } from "@/types/domain";
 
 const route = useRoute();
@@ -21,6 +22,14 @@ const configs = ref<ModelConfig[]>([]);
 const tools = ref<ToolConfig[]>([]);
 const loading = ref(false);
 const testing = ref(false);
+const chatProviderOptions = [
+  { label: "OpenAI", value: "OpenAI" },
+  { label: "Azure OpenAI", value: "Azure OpenAI" },
+];
+const permissionOptions = [
+  { label: "只读", value: "READ" },
+  { label: "写入", value: "WRITE" },
+];
 
 const form = reactive<ModelConfig>({
   type: "CHAT",
@@ -41,6 +50,20 @@ const embeddingConfig = computed(() =>
 const rerankerConfig = computed(() =>
   configs.value.find((item) => item.type === "RERANKER"),
 );
+const embeddingProviderOptions = computed(() =>
+  singleOption(embeddingConfig.value?.provider || "OpenAI"),
+);
+const embeddingModelOptions = computed(() =>
+  singleOption(embeddingConfig.value?.model || "text-embedding-3-large"),
+);
+const rerankerProviderOptions = computed(() =>
+  singleOption(rerankerConfig.value?.provider || "Jina AI"),
+);
+const rerankerModelOptions = computed(() =>
+  singleOption(
+    rerankerConfig.value?.model || "jina-reranker-v2-base-multilingual",
+  ),
+);
 
 const fallbackTools = computed<ToolConfig[]>(() =>
   tools.value.length
@@ -49,40 +72,50 @@ const fallbackTools = computed<ToolConfig[]>(() =>
         {
           name: "list_project_tree",
           description: "列出项目目录结构与文件树",
-          permissionLevel: "只读",
+          permissionLevel: "READ",
           enabled: true,
           requireConfirm: false,
         },
         {
           name: "search_text",
           description: "在项目中搜索关键词原文文本",
-          permissionLevel: "只读",
+          permissionLevel: "READ",
           enabled: true,
           requireConfirm: true,
         },
         {
           name: "read_file_lines",
           description: "按行读取文件内容（支持范围）",
-          permissionLevel: "只读",
+          permissionLevel: "READ",
           enabled: true,
           requireConfirm: true,
         },
         {
           name: "generate_pdf_report",
           description: "生成分析报告（PDF）",
-          permissionLevel: "写入",
+          permissionLevel: "WRITE",
           enabled: true,
           requireConfirm: true,
         },
         {
           name: "create_task_draft",
           description: "创建任务草稿（待人工发布）",
-          permissionLevel: "写入",
+          permissionLevel: "WRITE",
           enabled: true,
           requireConfirm: true,
         },
       ],
 );
+
+function singleOption(value: string | number) {
+  return [{ label: String(value), value: String(value) }];
+}
+
+function permissionValue(value?: string) {
+  if (value === "写入") return "WRITE";
+  if (value === "只读") return "READ";
+  return value || "READ";
+}
 
 onMounted(load);
 
@@ -147,10 +180,11 @@ async function runTest() {
         <div class="space-y-4">
           <label class="block">
             <span class="label">提供商</span>
-            <select v-model="form.provider" class="input">
-              <option>OpenAI</option>
-              <option>Azure OpenAI</option>
-            </select>
+            <UiSelect
+              v-model="form.provider"
+              :options="chatProviderOptions"
+              aria-label="选择聊天模型提供商"
+            />
           </label>
           <label class="block">
             <span class="label">模型</span>
@@ -212,17 +246,19 @@ async function runTest() {
         <div class="space-y-4">
           <label class="block">
             <span class="label">提供商</span>
-            <select class="input">
-              <option>{{ embeddingConfig?.provider || "OpenAI" }}</option>
-            </select>
+            <UiSelect
+              :model-value="embeddingConfig?.provider || 'OpenAI'"
+              :options="embeddingProviderOptions"
+              aria-label="向量模型提供商"
+            />
           </label>
           <label class="block">
             <span class="label">模型</span>
-            <select class="input">
-              <option>
-                {{ embeddingConfig?.model || "text-embedding-3-large" }}
-              </option>
-            </select>
+            <UiSelect
+              :model-value="embeddingConfig?.model || 'text-embedding-3-large'"
+              :options="embeddingModelOptions"
+              aria-label="向量模型"
+            />
           </label>
           <label class="block">
             <span class="label">维度（维度将自动识别）</span>
@@ -256,19 +292,21 @@ async function runTest() {
         <div class="space-y-4">
           <label class="block">
             <span class="label">提供商</span>
-            <select class="input">
-              <option>{{ rerankerConfig?.provider || "Jina AI" }}</option>
-            </select>
+            <UiSelect
+              :model-value="rerankerConfig?.provider || 'Jina AI'"
+              :options="rerankerProviderOptions"
+              aria-label="重排序模型提供商"
+            />
           </label>
           <label class="block">
             <span class="label">模型</span>
-            <select class="input">
-              <option>
-                {{
-                  rerankerConfig?.model || "jina-reranker-v2-base-multilingual"
-                }}
-              </option>
-            </select>
+            <UiSelect
+              :model-value="
+                rerankerConfig?.model || 'jina-reranker-v2-base-multilingual'
+              "
+              :options="rerankerModelOptions"
+              aria-label="重排序模型"
+            />
           </label>
           <label class="block">
             <span class="label">Top K（候选数）</span>
@@ -383,9 +421,14 @@ async function runTest() {
               <td class="table-td mono font-bold">{{ tool.name }}</td>
               <td class="table-td">{{ tool.description }}</td>
               <td class="table-td">
-                <select class="input h-9 min-h-9 w-28 py-0">
-                  <option>{{ tool.permissionLevel || "只读" }}</option>
-                </select>
+                <UiSelect
+                  class="w-28"
+                  :model-value="permissionValue(tool.permissionLevel)"
+                  :options="permissionOptions"
+                  size="sm"
+                  aria-label="选择工具权限等级"
+                  @change="tool.permissionLevel = String($event)"
+                />
               </td>
               <td class="table-td">
                 <button

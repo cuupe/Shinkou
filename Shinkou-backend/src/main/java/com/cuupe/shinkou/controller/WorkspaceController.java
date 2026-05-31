@@ -1,17 +1,14 @@
 package com.cuupe.shinkou.controller;
 
-import com.cuupe.shinkou.common.enums.ResultCode;
-import com.cuupe.shinkou.common.exception.BusinessException;
 import com.cuupe.shinkou.common.response.Result;
-import com.cuupe.shinkou.dto.ProjectDTO;
+import com.cuupe.shinkou.dto.ProjectFullDTO;
 import com.cuupe.shinkou.dto.WorkspaceDTO;
-import com.cuupe.shinkou.mapper.WorkspaceMapper;
+import com.cuupe.shinkou.dto.request.ProjectsRequest;
+import com.cuupe.shinkou.service.WorkspaceService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -19,58 +16,36 @@ import java.util.List;
 @RequestMapping("/api/workspaces")
 @RequiredArgsConstructor
 public class WorkspaceController {
-    private final WorkspaceMapper workspaceMapper;
+    private final WorkspaceService workspaceService;
 
     @GetMapping("/my")
     public Result<List<WorkspaceDTO>> myWorkspaces(Authentication authentication) {
-        return Result.success(
-                workspaceMapper.findActiveWorkspacesByUserId(currentUserId(authentication))
-        );
+        return Result.success(workspaceService.my(authentication));
     }
 
-    @GetMapping("/{workspaceId}")
-    public Result<WorkspaceDTO> workspace(
+    @PostMapping("/{workspaceId}/projects")
+    public Result<ProjectFullDTO> createProjects(
             @PathVariable Long workspaceId,
-            Authentication authentication
-    ) {
-        WorkspaceDTO workspace = workspaceMapper.findActiveWorkspaceForUser(
-                currentUserId(authentication),
-                workspaceId
-        );
-
-        if (workspace == null) {
-            throw new BusinessException(
-                    ResultCode.WORKSPACE_ACCESS_DENIED.name(),
-                    "无权访问该工作区");
-        }
-
-        return Result.success(workspace);
+            @Valid @RequestBody ProjectsRequest projectsRequest,
+            Authentication authentication) {
+        return Result.success(workspaceService.createProject(workspaceId, projectsRequest, authentication));
     }
 
     @GetMapping("/{workspaceId}/projects")
-    public Result<List<ProjectDTO>> projects(
+    public Result<List<ProjectFullDTO>> getProjects(
             @PathVariable Long workspaceId,
-            Authentication authentication
-    ) {
-        Long userId = currentUserId(authentication);
-
-        if (workspaceMapper.findActiveWorkspaceForUser(userId, workspaceId) == null) {
-            throw new BusinessException(
-                    ResultCode.WORKSPACE_ACCESS_DENIED.name(),
-                    "无权访问该工作区");
-        }
-
-        return Result.success(
-                workspaceMapper.findActiveProjectsForUser(userId, workspaceId)
-        );
+            Authentication authentication) {
+        return Result.success(workspaceService.getProjects(workspaceId, authentication));
     }
 
-    private Long currentUserId(Authentication authentication) {
-        if (authentication == null || !(authentication.getPrincipal() instanceof Long userId)) {
-            throw new BusinessException(
-                    ResultCode.AUTH_UNAUTHORIZED.name(),
-                    "未登录或登录已过期");
-        }
-        return userId;
+    @GetMapping("/{workspaceId}/projects/{projectId}")
+    public Result<ProjectFullDTO> getProject(
+            @PathVariable(name = "workspaceId") Long workspaceId,
+            @PathVariable(name = "projectId") Long projectId,
+            Authentication authentication){
+        return Result.success(workspaceService.getProject(workspaceId, projectId, authentication));
     }
+
+
+
 }

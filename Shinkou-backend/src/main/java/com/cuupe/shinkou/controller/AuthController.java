@@ -1,6 +1,10 @@
 package com.cuupe.shinkou.controller;
 
 import com.cuupe.shinkou.dto.*;
+import com.cuupe.shinkou.dto.request.ActivateRequest;
+import com.cuupe.shinkou.dto.request.LoginRequest;
+import com.cuupe.shinkou.dto.response.ActivateResponse;
+import com.cuupe.shinkou.dto.response.LoginResponse;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 

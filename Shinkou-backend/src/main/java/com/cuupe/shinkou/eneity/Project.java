@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.experimental.Accessors;
 
 import java.time.LocalDateTime;
 
@@ -13,6 +14,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 @TableName("projects")
+@Accessors(chain = true)
 public class Project {
     @TableId(type = IdType.AUTO)
     private Long id;
@@ -26,5 +28,4 @@ public class Project {
     private Long createdBy;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
-
 }

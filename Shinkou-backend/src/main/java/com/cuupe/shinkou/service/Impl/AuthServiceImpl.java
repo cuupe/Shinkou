@@ -4,6 +4,10 @@ import com.cuupe.shinkou.common.enums.ResultCode;
 import com.cuupe.shinkou.common.exception.BusinessException;
 import com.cuupe.shinkou.config.AuthProperties;
 import com.cuupe.shinkou.dto.*;
+import com.cuupe.shinkou.dto.request.ActivateRequest;
+import com.cuupe.shinkou.dto.request.LoginRequest;
+import com.cuupe.shinkou.dto.response.ActivateResponse;
+import com.cuupe.shinkou.dto.response.LoginResponse;
 import com.cuupe.shinkou.eneity.User;
 import com.cuupe.shinkou.mapper.AuthMapper;
 import com.cuupe.shinkou.mapper.InvitationMapper;
@@ -95,15 +99,15 @@ public class AuthServiceImpl implements AuthService {
     @Transactional
     @Override
     public UserMe me(Authentication authentication) {
-        if(authentication == null || !authentication.isAuthenticated()){
+        if (authentication == null || !authentication.isAuthenticated()) {
             throw new BusinessException(
                     ResultCode.AUTH_UNAUTHORIZED.name(),
                     "未登录或没有认证信息"
             );
         }
 
-        Object principle = authentication.getPrincipal();
-        if(!(principle instanceof Long id)){
+        Object principal = authentication.getPrincipal();
+        if(!(principal instanceof Long id)){
             throw new BusinessException(
                     ResultCode.AUTH_TOKEN_INVALID.name(),
                     "Token 无效"

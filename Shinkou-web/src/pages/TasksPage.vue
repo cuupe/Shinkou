@@ -12,6 +12,7 @@ import {
 import { taskApi } from "@/api/task.api";
 import type { TaskDraft, WorkTask } from "@/types/domain";
 import StatusBadge from "@/components/StatusBadge.vue";
+import UiSelect from "@/components/UiSelect.vue";
 import { asArrayFiles } from "@/utils/format";
 
 const route = useRoute();
@@ -23,6 +24,21 @@ const tasks = ref<WorkTask[]>([]);
 const loading = ref(false);
 const priority = ref("");
 const status = ref("");
+const source = ref("");
+const priorityOptions = [
+  { label: "优先级：全部", value: "" },
+  { label: "P1", value: "P1" },
+  { label: "P2", value: "P2" },
+  { label: "P3", value: "P3" },
+];
+const statusOptions = [
+  { label: "状态：全部", value: "" },
+  { label: "待确认", value: "CONFIRMING" },
+  { label: "待开发", value: "TODO" },
+  { label: "开发中", value: "IN_PROGRESS" },
+  { label: "已完成", value: "DONE" },
+];
+const sourceOptions = [{ label: "来源：全部", value: "" }];
 
 const demoTasks: WorkTask[] = [
   {
@@ -170,22 +186,21 @@ function byStatus(value: string) {
     </div>
 
     <div class="grid gap-3 xl:grid-cols-[180px_180px_180px_1fr_auto_auto_auto]">
-      <select v-model="priority" class="input">
-        <option value="">优先级：全部</option>
-        <option>P1</option>
-        <option>P2</option>
-        <option>P3</option>
-      </select>
-      <select v-model="status" class="input">
-        <option value="">状态：全部</option>
-        <option value="CONFIRMING">待确认</option>
-        <option value="TODO">待开发</option>
-        <option value="IN_PROGRESS">开发中</option>
-        <option value="DONE">已完成</option>
-      </select>
-      <select class="input">
-        <option>来源：全部</option>
-      </select>
+      <UiSelect
+        v-model="priority"
+        :options="priorityOptions"
+        aria-label="筛选任务优先级"
+      />
+      <UiSelect
+        v-model="status"
+        :options="statusOptions"
+        aria-label="筛选任务状态"
+      />
+      <UiSelect
+        v-model="source"
+        :options="sourceOptions"
+        aria-label="筛选任务来源"
+      />
       <label class="relative">
         <Search
           :size="18"

@@ -12,6 +12,7 @@ import { projectApi } from "@/api/project.api";
 import type { Project } from "@/types/domain";
 import EmptyState from "@/components/EmptyState.vue";
 import StatusBadge from "@/components/StatusBadge.vue";
+import UiSelect from "@/components/UiSelect.vue";
 import UiModal from "@/components/UiModal.vue";
 import { fmtDate } from "@/utils/format";
 
@@ -26,6 +27,12 @@ const status = ref("ACTIVE");
 const modalOpen = ref(false);
 const saving = ref(false);
 const form = reactive({ name: "", code: "", description: "" });
+const statusOptions = [
+  { label: "正常项目", value: "ACTIVE" },
+  { label: "已归档", value: "ARCHIVED" },
+  { label: "已删除", value: "DELETED" },
+  { label: "全部状态", value: "" },
+];
 
 let timer: ReturnType<typeof setTimeout>;
 
@@ -108,12 +115,11 @@ async function removeProject(project: Project) {
           placeholder="搜索项目名称或 code"
         />
       </label>
-      <select v-model="status" class="input">
-        <option value="ACTIVE">正常项目</option>
-        <option value="ARCHIVED">已归档</option>
-        <option value="DELETED">已删除</option>
-        <option value="">全部状态</option>
-      </select>
+      <UiSelect
+        v-model="status"
+        :options="statusOptions"
+        aria-label="筛选项目状态"
+      />
       <button class="btn btn-ghost lg:w-auto" type="button" @click="load">
         <RefreshCw :size="17" />
         刷新

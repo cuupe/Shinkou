@@ -168,11 +168,11 @@ function goAnalysis() {
         <div class="relative">
           <Search
             :size="18"
-            class="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"
+            class="pointer-events-none absolute left-3 top-1/2 z-10 -translate-y-1/2 text-slate-400"
           />
           <input
             v-model="keyword"
-            class="input pl-10"
+            class="input !pl-10"
             placeholder="搜索代码内容，例如 coupon / createOrder / payAmount"
             @keyup.enter="search"
           />

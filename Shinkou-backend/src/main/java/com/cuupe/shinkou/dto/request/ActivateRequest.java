@@ -1,4 +1,4 @@
-package com.cuupe.shinkou.dto;
+package com.cuupe.shinkou.dto.request;
 
 import jakarta.validation.constraints.NotBlank;
 import lombok.Data;

@@ -19,6 +19,7 @@ import {
   X,
 } from "lucide-vue-next";
 import ShinkouLogo from "@/components/ShinkouLogo.vue";
+import UiSelect from "@/components/UiSelect.vue";
 import { projectApi } from "@/api/project.api";
 import { useAuthStore } from "@/stores/auth.store";
 import { useProjectStore } from "@/stores/project.store";
@@ -63,6 +64,13 @@ const activeProject = computed(() => {
     ) || null
   );
 });
+const projectOptions = computed(() =>
+  projects.value.map((project) => ({
+    label: project.name,
+    value: String(project.id),
+    description: project.code,
+  })),
+);
 
 const navItems = computed(() => [
   { label: "项目概览", icon: Home, to: `${projectBase.value}/overview` },
@@ -82,6 +90,7 @@ const navItems = computed(() => [
 const userInitial = computed(() =>
   (auth.user?.name || auth.user?.email || "S").slice(0, 1).toUpperCase(),
 );
+const isCodeIdeRoute = computed(() => route.path.endsWith("/code"));
 
 onMounted(loadProjects);
 watch(workspaceId, loadProjects);
@@ -112,14 +121,16 @@ async function loadProjects() {
   }
 }
 
-function selectProject(event: Event) {
-  const value = (event.target as HTMLSelectElement).value;
-  if (!value) {
+function selectProject(value: string | number) {
+  const nextProjectId = String(value);
+  if (!nextProjectId) {
     router.push(`/workspaces/${workspaceId.value}/projects`);
     return;
   }
-  localStorage.setItem(`lastProjectId:${workspaceId.value}`, value);
-  router.push(`/workspaces/${workspaceId.value}/projects/${value}/overview`);
+  localStorage.setItem(`lastProjectId:${workspaceId.value}`, nextProjectId);
+  router.push(
+    `/workspaces/${workspaceId.value}/projects/${nextProjectId}/overview`,
+  );
 }
 </script>
 
@@ -170,20 +181,14 @@ function selectProject(event: Event) {
           <ShinkouLogo size="md" />
         </RouterLink>
 
-        <select
-          class="hidden h-12 w-[260px] rounded-xl border border-slate-200 bg-white px-4 text-[15px] font-semibold text-slate-900 outline-none lg:block"
-          :value="selectedProjectId"
+        <UiSelect
+          class="hidden w-[260px] lg:block"
+          :model-value="selectedProjectId"
+          :options="projectOptions"
+          placeholder="选择项目"
+          aria-label="选择项目"
           @change="selectProject"
-        >
-          <option value="">选择项目</option>
-          <option
-            v-for="project in projects"
-            :key="project.id"
-            :value="project.id"
-          >
-            {{ project.name }}
-          </option>
-        </select>
+        />
 
         <label class="relative mx-auto hidden w-full max-w-[500px] lg:block">
           <Search
@@ -239,6 +244,14 @@ function selectProject(event: Event) {
         v-if="mobileOpen"
         class="border-t border-slate-100 bg-white p-3 lg:hidden"
       >
+        <UiSelect
+          class="mb-3"
+          :model-value="selectedProjectId"
+          :options="projectOptions"
+          placeholder="选择项目"
+          aria-label="选择项目"
+          @change="selectProject"
+        />
         <RouterLink
           v-for="item in navItems"
           :key="item.to"
@@ -259,16 +272,28 @@ function selectProject(event: Event) {
           !hasSelectedProject &&
           route.path !== `/workspaces/${workspaceId}/projects`
         "
-        class="mx-auto max-w-[1660px] px-4 py-6 sm:px-7 lg:px-8"
+        :class="
+          isCodeIdeRoute
+            ? 'h-[calc(100vh-76px)] overflow-hidden'
+            : 'mx-auto max-w-[1660px] px-4 py-6 sm:px-7 lg:px-8'
+        "
       >
         <div
+          v-if="!isCodeIdeRoute"
           class="mb-5 rounded-xl border border-amber-200 bg-amber-50 px-5 py-4 text-sm font-semibold text-amber-800"
         >
           当前工作区还没有可选项目，内部页面会展示示例数据。创建或修正项目数据后，顶部项目选择器会自动出现项目。
         </div>
         <RouterView />
       </div>
-      <div v-else class="mx-auto max-w-[1660px] px-4 py-6 sm:px-7 lg:px-8">
+      <div
+        v-else
+        :class="
+          isCodeIdeRoute
+            ? 'h-[calc(100vh-76px)] overflow-hidden'
+            : 'mx-auto max-w-[1660px] px-4 py-6 sm:px-7 lg:px-8'
+        "
+      >
         <RouterView />
       </div>
     </main>
