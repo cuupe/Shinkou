@@ -10,6 +10,9 @@ import lombok.experimental.Accessors;
 
 import java.time.LocalDateTime;
 
+/**
+ * 项目实体类，对应数据库projects表
+ */
 @Data
 @AllArgsConstructor
 @NoArgsConstructor

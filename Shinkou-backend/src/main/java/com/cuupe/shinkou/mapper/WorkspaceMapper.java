@@ -11,6 +11,11 @@ import java.util.List;
 @Mapper
 public interface WorkspaceMapper {
 
+    /**
+     * 查询用户的所有活跃工作区
+     * @param userId 用户ID
+     * @return 工作区DTO列表
+     */
     @Select("""
         SELECT
             w.id AS id,
@@ -29,6 +34,12 @@ public interface WorkspaceMapper {
     List<WorkspaceDTO> findActiveWorkspacesByUserId(@Param("userId") Long userId);
 
 
+    /**
+     * 根据工作区ID和项目ID查询项目
+     * @param workspaceId 工作区ID
+     * @param projectId 项目ID
+     * @return 项目完整信息DTO
+     */
     @Select("""
         SELECT
             id,
@@ -50,6 +61,11 @@ public interface WorkspaceMapper {
     ProjectFullDTO getProjectByWorkspaceIdAndProjectId(@Param("workspaceId") Long workspaceId,
                                                        @Param("projectId") Long projectId);
 
+    /**
+     * 根据工作区ID查询所有项目
+     * @param workspaceId 工作区ID
+     * @return 项目完整信息DTO列表
+     */
     @Select("""
          SELECT
             id,
@@ -69,6 +85,12 @@ public interface WorkspaceMapper {
         """)
     List<ProjectFullDTO> getProjectsByWorkspaceId(@Param("workspaceId") Long workspaceId);
 
+    /**
+     * 检查用户是否是工作区的活跃成员
+     * @param workspaceId 工作区ID
+     * @param userId 用户ID
+     * @return 存在的记录数
+     */
     @Select("""
             SELECT COUNT(1)
             FROM workspace_members wm
@@ -82,6 +104,11 @@ public interface WorkspaceMapper {
                            @Param("userId") Long userId);
 
 
+    /**
+     * 创建新项目
+     * @param project 项目实体对象
+     * @return 创建的项目完整信息DTO
+     */
     @Insert("""
             INSERT INTO projects (
                 workspace_id,
@@ -111,6 +138,12 @@ public interface WorkspaceMapper {
     ProjectFullDTO createProject(Project project);
 
 
+    /**
+     * 查询工作区成员的活跃角色
+     * @param workspaceId 工作区ID
+     * @param userId 用户ID
+     * @return 角色字符串
+     */
     @Select("""
         SELECT
             
@@ -119,6 +152,12 @@ public interface WorkspaceMapper {
     String findActiveMemberRole(Long workspaceId, Long userId);
 
 
+    /**
+     * 统计工作区下指定code的项目数量
+     * @param workspaceId 工作区ID
+     * @param code 项目code
+     * @return 项目数量
+     */
     @Select("""
             SELECT
                 COUNT(1)

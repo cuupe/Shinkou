@@ -88,23 +88,23 @@ const recentAnalyses = [
       </p>
     </header>
 
-    <div class="grid gap-6 sm:grid-cols-2 xl:grid-cols-5">
+    <div class="grid gap-6 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-5">
       <article
         v-for="item in metrics"
         :key="item.label"
-        class="card flex items-center gap-5 p-6"
+        class="card flex min-w-0 items-center gap-4 p-5 2xl:gap-5 2xl:p-6"
       >
         <div
           class="grid h-16 w-16 shrink-0 place-items-center rounded-full bg-brand-50 text-brand-600"
         >
           <component :is="item.icon" :size="32" />
         </div>
-        <div>
-          <p class="text-sm font-semibold text-slate-500">{{ item.label }}</p>
+        <div class="min-w-0">
+          <p class="one-line text-sm font-semibold text-slate-500">{{ item.label }}</p>
           <p class="mt-1 text-2xl font-black text-slate-950">
             {{ item.value }}
           </p>
-          <p class="mt-1 text-sm text-slate-500">{{ item.sub }}</p>
+          <p class="one-line mt-1 text-sm text-slate-500">{{ item.sub }}</p>
         </div>
       </article>
     </div>
@@ -131,14 +131,14 @@ const recentAnalyses = [
             <div
               v-for="[name, pct, count, color] in languages"
               :key="name"
-              class="grid grid-cols-[1fr_70px_52px] items-center gap-3 text-sm"
+              class="grid grid-cols-[minmax(0,1fr)_64px_48px] items-center gap-3 text-sm"
             >
-              <div class="flex items-center gap-3">
+              <div class="flex min-w-0 items-center gap-3">
                 <span
                   class="h-3 w-3 rounded-full"
                   :style="{ background: color }"
                 />
-                <span class="font-semibold text-slate-700">{{ name }}</span>
+                <span class="one-line font-semibold text-slate-700">{{ name }}</span>
               </div>
               <span class="text-right font-semibold text-slate-600">{{
                 pct
@@ -164,16 +164,16 @@ const recentAnalyses = [
           <div
             v-for="[title, desc, time] in activities"
             :key="title"
-            class="grid grid-cols-[32px_1fr_auto] gap-3"
+            class="grid grid-cols-[32px_minmax(0,1fr)_auto] gap-3"
           >
             <span
               class="grid h-8 w-8 place-items-center rounded-full bg-brand-50 text-brand-600"
             >
               <CheckCircle2 :size="17" />
             </span>
-            <div>
-              <p class="font-bold text-slate-900">{{ title }}</p>
-              <p class="mt-1 text-sm text-slate-500">{{ desc }}</p>
+            <div class="min-w-0">
+              <p class="one-line font-bold text-slate-900">{{ title }}</p>
+              <p class="line-clamp-2 mt-1 text-sm text-slate-500">{{ desc }}</p>
             </div>
             <span class="text-sm text-slate-500">{{ time }}</span>
           </div>
@@ -248,13 +248,13 @@ const recentAnalyses = [
           class="rounded-xl border border-slate-200 p-5"
         >
           <div class="flex items-start justify-between gap-3">
-            <h3 class="font-black">{{ title }}</h3>
+            <h3 class="line-clamp-2 font-black">{{ title }}</h3>
             <span
               class="rounded-md bg-emerald-50 px-2 py-1 text-xs font-bold text-emerald-600"
               >{{ status }}</span
             >
           </div>
-          <p class="mt-3 min-h-12 text-sm leading-6 text-slate-500">
+          <p class="line-clamp-2 mt-3 min-h-12 text-sm leading-6 text-slate-500">
             {{ desc }}
           </p>
           <div class="mt-5 grid grid-cols-2 gap-3">

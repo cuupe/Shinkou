@@ -3,6 +3,9 @@ package com.cuupe.shinkou.dto.request;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
 
+/**
+ * 激活请求数据传输对象
+ */
 @Data
 public class ActivateRequest {
     @NotBlank(message = "邀请码不得为空")

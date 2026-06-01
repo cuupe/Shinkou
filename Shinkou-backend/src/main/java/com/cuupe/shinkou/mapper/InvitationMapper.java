@@ -7,6 +7,11 @@ import org.apache.ibatis.annotations.*;
 @Mapper
 public interface InvitationMapper {
 
+    /**
+     * 根据token查询邀请信息
+     * @param token 邀请令牌
+     * @return 邀请DTO对象，包含工作区信息
+     */
     @Select("""
             SELECT
                 id,

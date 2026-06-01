@@ -9,6 +9,9 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 
+/**
+ * 邀请实体类，对应数据库invitations表
+ */
 @Data
 @AllArgsConstructor
 @NoArgsConstructor

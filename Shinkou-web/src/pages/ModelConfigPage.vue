@@ -171,11 +171,13 @@ async function runTest() {
 
     <div v-if="loading" class="card p-8 text-slate-500">正在加载配置...</div>
 
-    <div class="grid gap-5 xl:grid-cols-[1fr_1fr_1fr_430px]">
+    <div
+      class="grid gap-5 lg:grid-cols-2 2xl:grid-cols-[minmax(0,1fr)_minmax(0,1fr)_minmax(0,1fr)_360px]"
+    >
       <section class="card p-5">
-        <h2 class="mb-5 flex items-center gap-2 text-lg font-black">
-          <MessageCircle :size="21" class="text-brand-600" />
-          聊天模型（Chat Model）
+        <h2 class="mb-5 flex min-w-0 items-center gap-2 text-lg font-black">
+          <MessageCircle :size="21" class="shrink-0 text-brand-600" />
+          <span class="one-line">聊天模型（Chat Model）</span>
         </h2>
         <div class="space-y-4">
           <label class="block">
@@ -239,9 +241,9 @@ async function runTest() {
       </section>
 
       <section class="card p-5">
-        <h2 class="mb-5 flex items-center gap-2 text-lg font-black">
-          <Layers :size="21" class="text-brand-600" />
-          向量模型（Embedding Model）
+        <h2 class="mb-5 flex min-w-0 items-center gap-2 text-lg font-black">
+          <Layers :size="21" class="shrink-0 text-brand-600" />
+          <span class="one-line">向量模型（Embedding Model）</span>
         </h2>
         <div class="space-y-4">
           <label class="block">
@@ -285,9 +287,9 @@ async function runTest() {
       </section>
 
       <section class="card p-5">
-        <h2 class="mb-5 flex items-center gap-2 text-lg font-black">
-          <SlidersHorizontal :size="21" class="text-brand-600" />
-          重排序模型（Reranker Model）
+        <h2 class="mb-5 flex min-w-0 items-center gap-2 text-lg font-black">
+          <SlidersHorizontal :size="21" class="shrink-0 text-brand-600" />
+          <span class="one-line">重排序模型（Reranker Model）</span>
         </h2>
         <div class="space-y-4">
           <label class="block">
@@ -333,10 +335,10 @@ async function runTest() {
       </section>
 
       <aside class="card p-5">
-        <div class="mb-5 flex items-center justify-between">
-          <h2 class="text-lg font-black">连通性检查</h2>
+        <div class="mb-5 flex min-w-0 items-center justify-between gap-3">
+          <h2 class="one-line text-lg font-black">连通性检查</h2>
           <button
-            class="flex items-center gap-2 text-sm font-bold text-slate-500"
+            class="flex shrink-0 items-center gap-2 text-sm font-bold text-slate-500"
             @click="load"
           >
             <RefreshCw :size="16" />
@@ -356,18 +358,18 @@ async function runTest() {
               ['工具服务', '', '132ms'],
             ]"
             :key="item[0]"
-            class="flex items-start justify-between gap-3"
+            class="flex min-w-0 items-start justify-between gap-3"
           >
-            <div class="flex gap-3">
+            <div class="flex min-w-0 gap-3">
               <span
                 class="grid h-10 w-10 place-items-center rounded-full bg-slate-100 text-slate-600"
               >
                 <Box :size="18" />
               </span>
-              <div>
-                <p class="font-bold">
+              <div class="min-w-0">
+                <p class="font-bold leading-6">
                   {{ item[0] }}
-                  <span v-if="item[1]" class="text-slate-500"
+                  <span v-if="item[1]" class="text-slate-500 break-words"
                     >（{{ item[1] }}）</span
                   >
                 </p>
@@ -396,9 +398,9 @@ async function runTest() {
 
     <section class="card overflow-hidden">
       <div class="border-b border-slate-100 px-5 py-4">
-        <h2 class="flex items-center gap-2 text-lg font-black">
-          <SlidersHorizontal :size="20" class="text-brand-600" />
-          工具配置
+        <h2 class="flex min-w-0 items-center gap-2 text-lg font-black">
+          <SlidersHorizontal :size="20" class="shrink-0 text-brand-600" />
+          <span class="one-line">工具配置</span>
         </h2>
         <p class="mt-1 text-sm text-slate-500">
           配置可用工具及其权限与使用策略。
@@ -473,11 +475,11 @@ async function runTest() {
           </tbody>
         </table>
       </div>
-      <div class="flex justify-between border-t border-slate-100 p-5">
-        <button class="btn btn-ghost !w-auto">添加工具</button>
-        <div class="flex gap-3">
-          <button class="btn btn-ghost !w-auto">恢复默认配置</button>
-          <button class="btn btn-primary !w-auto" @click="save">
+      <div class="flex flex-col gap-3 border-t border-slate-100 p-5 lg:flex-row lg:justify-between">
+        <button class="btn btn-ghost lg:!w-auto">添加工具</button>
+        <div class="grid gap-3 sm:grid-cols-2 lg:flex">
+          <button class="btn btn-ghost lg:!w-auto">恢复默认配置</button>
+          <button class="btn btn-primary lg:!w-auto" @click="save">
             <CheckCircle2 :size="18" />
             保存配置
           </button>

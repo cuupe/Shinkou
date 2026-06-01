@@ -50,7 +50,7 @@ async function remove(report: Report) {
 </script>
 
 <template>
-  <section class="grid gap-5 xl:grid-cols-[minmax(0,1fr)_520px]">
+  <section class="grid gap-5 2xl:grid-cols-[minmax(0,1fr)_460px]">
     <main class="card min-w-0 overflow-hidden">
       <div
         class="flex flex-col gap-3 border-b border-slate-200 p-4 lg:flex-row lg:items-center lg:justify-between"
@@ -174,10 +174,10 @@ async function remove(report: Report) {
       <div
         class="flex items-center justify-between border-b border-slate-200 px-5 py-4"
       >
-        <div>
-          <h2 class="flex items-center gap-2 text-lg font-black text-slate-950">
-            <FileText :size="20" class="text-brand-600" />
-            报告预览
+        <div class="min-w-0">
+          <h2 class="flex min-w-0 items-center gap-2 text-lg font-black text-slate-950">
+            <FileText :size="20" class="shrink-0 text-brand-600" />
+            <span class="one-line">报告预览</span>
           </h2>
           <p class="mt-1 text-xs text-slate-500">
             Markdown / PDF 下载由后端接口提供。

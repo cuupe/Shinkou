@@ -8,6 +8,9 @@ import lombok.experimental.Accessors;
 
 import java.util.List;
 
+/**
+ * 激活响应数据传输对象
+ */
 @Data
 @Accessors(chain = true)
 public class ActivateResponse{

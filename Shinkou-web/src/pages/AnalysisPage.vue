@@ -147,7 +147,7 @@ async function genReport() {
 </script>
 
 <template>
-  <section class="grid gap-6 xl:grid-cols-[minmax(0,1fr)_440px]">
+  <section class="grid gap-6 2xl:grid-cols-[minmax(0,1fr)_420px]">
     <main class="space-y-6">
       <header>
         <h1 class="text-3xl font-black text-slate-950">需求影响分析</h1>
@@ -169,7 +169,7 @@ async function genReport() {
           class="min-h-36 w-full resize-y rounded-xl border border-brand-400 bg-white p-4 text-sm leading-7 outline-none focus:ring-4 focus:ring-brand-500/10"
           maxlength="2000"
         />
-        <div class="mt-4 grid gap-3 lg:grid-cols-[180px_auto_1fr_auto_auto]">
+        <div class="mt-4 grid gap-3 lg:grid-cols-[minmax(0,180px)_auto_1fr_auto_auto]">
           <button class="btn btn-ghost">深度分析（推荐）</button>
           <button class="btn btn-ghost">
             <Settings2 :size="17" />
@@ -194,8 +194,8 @@ async function genReport() {
       <nav
         class="mobile-scroll flex gap-8 border-b border-slate-200 text-sm font-bold"
       >
-        <button
-          v-for="item in [
+          <button
+            v-for="item in [
             ['需求摘要', Bot],
             ['影响文件', FileCode2],
             ['影响接口', GitBranch],
@@ -204,7 +204,7 @@ async function genReport() {
             ['任务草稿', ClipboardList],
           ]"
           :key="item[0] as string"
-          class="flex shrink-0 items-center gap-2 border-b-2 border-transparent px-1 py-4 text-slate-500 first:border-brand-600 first:text-brand-600"
+            class="flex shrink-0 items-center gap-2 border-b-2 border-transparent px-1 py-4 text-slate-500 first:border-brand-600 first:text-brand-600"
         >
           <component :is="item[1]" :size="17" />
           {{ item[0] }}
@@ -218,23 +218,23 @@ async function genReport() {
             需求摘要
           </h2>
           <dl class="space-y-3 text-sm">
-            <div class="grid grid-cols-[100px_1fr] gap-3">
+            <div class="grid grid-cols-[84px_minmax(0,1fr)] gap-3 sm:grid-cols-[100px_minmax(0,1fr)]">
               <dt class="text-slate-500">需求主题</dt>
               <dd class="font-semibold">新增优惠券折扣功能</dd>
             </div>
-            <div class="grid grid-cols-[100px_1fr] gap-3">
+            <div class="grid grid-cols-[84px_minmax(0,1fr)] gap-3 sm:grid-cols-[100px_minmax(0,1fr)]">
               <dt class="text-slate-500">主要目标</dt>
               <dd>
                 在线路流程中支持优惠券校验与折扣计算，确保优惠规则正确应用并记录日志。
               </dd>
             </div>
-            <div class="grid grid-cols-[100px_1fr] gap-3">
+            <div class="grid grid-cols-[84px_minmax(0,1fr)] gap-3 sm:grid-cols-[100px_minmax(0,1fr)]">
               <dt class="text-slate-500">影响范围</dt>
               <dd>
                 后端订单服务、优惠券服务、结算流程、前端结算页面、日志与报表模块
               </dd>
             </div>
-            <div class="grid grid-cols-[100px_1fr] gap-3">
+            <div class="grid grid-cols-[84px_minmax(0,1fr)] gap-3 sm:grid-cols-[100px_minmax(0,1fr)]">
               <dt class="text-slate-500">影响级别</dt>
               <dd>
                 <span
@@ -424,9 +424,9 @@ async function genReport() {
       </div>
     </main>
 
-    <aside class="card h-fit p-6 xl:sticky xl:top-[100px]">
+    <aside class="card h-fit p-6 2xl:sticky 2xl:top-[100px]">
       <div class="mb-6 flex items-center justify-between">
-        <h2 class="text-xl font-black">Agent 执行轨迹</h2>
+        <h2 class="one-line text-xl font-black">Agent 执行轨迹</h2>
         <button class="btn btn-ghost !min-h-9 !w-auto !rounded-full !px-3">
           收起
         </button>

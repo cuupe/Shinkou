@@ -26,43 +26,29 @@ export function activateAccount(payload: ActivatePayload) {
   });
 }
 
-export function persistAuth(response: AuthResponse) {
-  localStorage.setItem("Shinkou_access_token", response.accessToken);
-  localStorage.setItem("Shinkou_user", JSON.stringify(response.user));
-  localStorage.setItem(
-    "Shinkou_workspaces",
-    JSON.stringify(response.workspaces),
-  );
-  localStorage.setItem("accessToken", response.accessToken);
-  localStorage.setItem("authUser", JSON.stringify(response.user));
-  localStorage.setItem("workspaces", JSON.stringify(response.workspaces));
+export function persistAuth(_response: AuthResponse) {
+  sessionStorage.setItem("Shinkou_session_active", "true");
+  clearLegacyAuthStorage();
 }
 
 export function getAuthToken() {
-  return localStorage.getItem("Shinkou_access_token");
+  return null;
 }
 
 export function getSavedUser() {
-  const stored = localStorage.getItem("Shinkou_user");
-  if (!stored) return null;
-  try {
-    return JSON.parse(stored) as AuthResponse["user"];
-  } catch {
-    return null;
-  }
+  return null;
 }
 
 export function getSavedWorkspaces() {
-  const stored = localStorage.getItem("Shinkou_workspaces");
-  if (!stored) return [];
-  try {
-    return JSON.parse(stored) as AuthResponse["workspaces"];
-  } catch {
-    return [];
-  }
+  return [];
 }
 
 export function clearAuth() {
+  sessionStorage.removeItem("Shinkou_session_active");
+  clearLegacyAuthStorage();
+}
+
+function clearLegacyAuthStorage() {
   localStorage.removeItem("Shinkou_access_token");
   localStorage.removeItem("Shinkou_user");
   localStorage.removeItem("Shinkou_workspaces");

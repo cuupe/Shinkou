@@ -4,6 +4,9 @@ import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
 
+/**
+ * 登录请求数据传输对象
+ */
 @Data
 public class LoginRequest {
     @NotBlank(message = "邮箱不能为空")

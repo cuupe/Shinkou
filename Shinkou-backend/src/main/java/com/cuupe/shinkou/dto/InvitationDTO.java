@@ -5,6 +5,9 @@ import lombok.experimental.Accessors;
 
 import java.time.LocalDateTime;
 
+/**
+ * 邀请信息数据传输对象
+ */
 @Data
 @Accessors(chain = true)
 public class InvitationDTO{

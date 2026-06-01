@@ -13,8 +13,7 @@ const router = createRouter({
   routes: [
     {
       path: "/",
-      redirect: () =>
-        localStorage.getItem("accessToken") ? defaultAuthedPath() : "/login",
+      redirect: () => defaultAuthedPath(),
     },
     {
       path: "/login",
@@ -123,21 +122,24 @@ const router = createRouter({
 router.beforeEach(async (to) => {
   const auth = useAuthStore();
 
-  if (to.meta.guest && auth.accessToken) {
-    return defaultAuthedPath();
+  if (to.meta.guest) {
+    if (!auth.hydrated) {
+      try {
+        await auth.refreshMe();
+      } catch {
+        auth.clearSession();
+      }
+    }
+    return auth.isAuthed ? defaultAuthedPath() : true;
   }
 
   if (!to.meta.auth) return true;
 
-  if (!auth.accessToken) {
-    return { path: "/login", query: { redirect: to.fullPath } };
-  }
-
-  if (!auth.hydrated && auth.workspaces.length === 0) {
+  if (!auth.hydrated) {
     try {
       await auth.refreshMe();
     } catch {
-      auth.logout();
+      auth.clearSession();
       return { path: "/login", query: { redirect: to.fullPath } };
     }
   }

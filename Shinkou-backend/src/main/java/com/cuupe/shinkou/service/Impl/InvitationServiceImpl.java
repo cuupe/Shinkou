@@ -17,6 +17,11 @@ public class InvitationServiceImpl implements InvitationService {
 
     private final InvitationMapper invitationMapper;
 
+    /**
+     * 验证邀请令牌的有效性
+     * @param token 邀请令牌字符串
+     * @return 邀请信息DTO
+     */
     @Override
     public InvitationDTO tokenCheck(String token) {
         if(token == null || token.isBlank()){
@@ -33,6 +38,10 @@ public class InvitationServiceImpl implements InvitationService {
     }
 
 
+    /**
+     * 验证邀请链接的状态和有效期
+     * @param invitation 邀请DTO对象
+     */
     private void tokenValidation(InvitationDTO invitation) {
         if(invitation == null){
             throw new BusinessException(

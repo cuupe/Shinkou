@@ -7,7 +7,16 @@ import com.cuupe.shinkou.eneity.Project;
 import com.cuupe.shinkou.eneity.User;
 import com.cuupe.shinkou.eneity.Workspace;
 
-public class Data2DTO {
+
+/**
+ * 数据转 DTO 工具类
+ */
+public final class Data2DTO {
+    /**
+     * 用户实体转用户DTO
+     * @param user 用户实体对象
+     * @return 用户DTO对象
+     */
     public static UserDTO user2UserDTO(User user){
         return new UserDTO()
                 .setId(user.getId())
@@ -19,6 +28,11 @@ public class Data2DTO {
                 .setAvatarUrl(user.getAvatarUrl());
     }
 
+    /**
+     * 项目实体转项目完整DTO
+     * @param project 项目实体对象
+     * @return 项目完整信息DTO
+     */
     public static ProjectFullDTO project2ProjectFullDTO(Project project) {
         return new ProjectFullDTO()
                 .setCode(project.getCode())

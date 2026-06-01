@@ -161,7 +161,7 @@ function byStatus(value: string) {
       </p>
     </header>
 
-    <div class="grid gap-5 sm:grid-cols-2 xl:grid-cols-5">
+    <div class="grid gap-5 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-5">
       <article
         v-for="item in [
           ['全部任务', summary.total, ClipboardList, 'brand'],
@@ -171,21 +171,23 @@ function byStatus(value: string) {
           ['已完成', summary.done, CheckCircle2, 'emerald'],
         ]"
         :key="item[0] as string"
-        class="card flex items-center justify-between p-6"
+        class="card flex min-w-0 items-center justify-between gap-3 p-6"
       >
-        <div>
-          <p class="text-sm font-bold text-slate-600">{{ item[0] }}</p>
+        <div class="min-w-0">
+          <p class="one-line text-sm font-bold text-slate-600">{{ item[0] }}</p>
           <p class="mt-2 text-3xl font-black text-slate-950">{{ item[1] }}</p>
         </div>
         <div
-          class="grid h-14 w-14 place-items-center rounded-full bg-brand-50 text-brand-600"
+          class="grid h-14 w-14 shrink-0 place-items-center rounded-full bg-brand-50 text-brand-600"
         >
           <component :is="item[2]" :size="25" />
         </div>
       </article>
     </div>
 
-    <div class="grid gap-3 xl:grid-cols-[180px_180px_180px_1fr_auto_auto_auto]">
+    <div
+      class="grid gap-3 lg:grid-cols-2 xl:grid-cols-[180px_180px_180px_minmax(0,1fr)] 2xl:grid-cols-[180px_180px_180px_minmax(0,1fr)_auto_auto_auto]"
+    >
       <UiSelect
         v-model="priority"
         :options="priorityOptions"
@@ -219,7 +221,7 @@ function byStatus(value: string) {
 
     <div v-if="loading" class="card p-8 text-slate-500">正在加载任务...</div>
 
-    <div v-else class="grid gap-5 xl:grid-cols-[1fr_320px]">
+    <div v-else class="grid gap-5 2xl:grid-cols-[minmax(0,1fr)_320px]">
       <main class="grid gap-4 lg:grid-cols-2 2xl:grid-cols-4">
         <section
           v-for="[key, label, lineClass] in columns"
@@ -246,26 +248,26 @@ function byStatus(value: string) {
               class="rounded-xl border border-slate-200 bg-white p-4 shadow-sm"
             >
               <div class="mb-3 flex items-start justify-between gap-3">
-                <h3 class="font-black leading-6">{{ task.title }}</h3>
+                <h3 class="line-clamp-2 font-black leading-6">{{ task.title }}</h3>
                 <StatusBadge :status="task.priority" />
               </div>
-              <p class="min-h-12 text-sm leading-6 text-slate-500">
+              <p class="line-clamp-2 min-h-12 text-sm leading-6 text-slate-500">
                 {{ task.description }}
               </p>
               <div class="mt-4 flex flex-wrap gap-2">
                 <span
                   v-for="file in asArrayFiles(task.relatedFiles).slice(0, 2)"
                   :key="file"
-                  class="rounded-md border border-slate-200 bg-slate-50 px-2 py-1 text-xs text-slate-600"
+                  class="max-w-full rounded-md border border-slate-200 bg-slate-50 px-2 py-1 text-xs text-slate-600 one-line"
                 >
                   {{ file }}
                 </span>
               </div>
               <div
-                class="mt-4 flex items-center justify-between text-xs text-slate-500"
+                class="mt-4 flex min-w-0 items-center justify-between gap-3 text-xs text-slate-500"
               >
-                <span>验收标准 3 条</span>
-                <span>负责人 Zhang Wei</span>
+                <span class="one-line">验收标准 3 条</span>
+                <span class="one-line">负责人 Zhang Wei</span>
               </div>
             </article>
             <button
@@ -283,7 +285,7 @@ function byStatus(value: string) {
             <h2 class="font-black">任务概览</h2>
             <button class="text-sm font-bold text-slate-500">刷新</button>
           </div>
-          <div class="grid grid-cols-[140px_1fr] items-center gap-4">
+          <div class="grid grid-cols-[120px_minmax(0,1fr)] items-center gap-4 sm:grid-cols-[140px_minmax(0,1fr)]">
             <div
               class="grid h-32 w-32 place-items-center rounded-full bg-[conic-gradient(#f59e0b_0_25%,#3b82f6_25%_46%,#8b5cf6_46%_75%,#34d399_75%_100%)]"
             >
@@ -297,16 +299,16 @@ function byStatus(value: string) {
               </div>
             </div>
             <div class="space-y-2 text-sm">
-              <div class="flex justify-between">
+              <div class="flex min-w-0 justify-between gap-3">
                 <span>待确认</span><span>25%</span>
               </div>
-              <div class="flex justify-between">
+              <div class="flex min-w-0 justify-between gap-3">
                 <span>待开发</span><span>21%</span>
               </div>
-              <div class="flex justify-between">
+              <div class="flex min-w-0 justify-between gap-3">
                 <span>开发中</span><span>29%</span>
               </div>
-              <div class="flex justify-between">
+              <div class="flex min-w-0 justify-between gap-3">
                 <span>已完成</span><span>25%</span>
               </div>
             </div>
@@ -323,8 +325,8 @@ function byStatus(value: string) {
               ]"
               :key="item[0]"
             >
-              <div class="mb-2 flex justify-between text-sm">
-                <span>{{ item[0] }}</span
+              <div class="mb-2 flex min-w-0 justify-between gap-3 text-sm">
+                <span class="one-line">{{ item[0] }}</span
                 ><span>{{ item[1] }} {{ item[2] }}</span>
               </div>
               <div class="h-2 rounded-full bg-slate-100">

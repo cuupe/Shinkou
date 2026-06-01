@@ -19,6 +19,11 @@ public class WorkspaceServiceImpl implements WorkspaceService {
     private final WorkspaceMapper workspaceMapper;
 
 
+    /**
+     * 获取当前用户的所有工作区列表
+     * @param authentication Spring Security认证对象
+     * @return 工作区DTO列表
+     */
     @Override
     public List<WorkspaceDTO> my(Authentication authentication) {
         Long id = currentUserId(authentication);
@@ -32,6 +37,17 @@ public class WorkspaceServiceImpl implements WorkspaceService {
         return workspaceMapper.findActiveWorkspacesByUserId(id);
     }
 
+    /**
+     * 在指定工作区创建新项目
+     * 1. 验证用户权限
+     * 2. 验证项目请求参数
+     * 3. 检查项目code是否重复
+     * 4. 创建项目并返回完整信息
+     * @param workspaceId 工作区ID
+     * @param projectsRequest 项目创建请求
+     * @param authentication Spring Security认证对象
+     * @return 创建的项目完整信息
+     */
     @Override
     public ProjectFullDTO createProject(Long workspaceId,
                                         ProjectsRequest projectsRequest,
@@ -68,6 +84,12 @@ public class WorkspaceServiceImpl implements WorkspaceService {
         return project;
     }
 
+    /**
+     * 获取指定工作区下的所有项目列表
+     * @param workspaceId 工作区ID
+     * @param authentication Spring Security认证对象
+     * @return 项目完整信息DTO列表
+     */
     @Override
     public List<ProjectFullDTO> getProjects(Long workspaceId,
                                             Authentication authentication) {
@@ -79,6 +101,13 @@ public class WorkspaceServiceImpl implements WorkspaceService {
         return workspaceMapper.getProjectsByWorkspaceId(workspaceId);
     }
 
+    /**
+     * 获取指定工作区下的特定项目详情
+     * @param workspaceId 工作区ID
+     * @param projectId 项目ID
+     * @param authentication Spring Security认证对象
+     * @return 项目完整信息DTO
+     */
     @Override
     public ProjectFullDTO getProject(Long workspaceId,
                                      Long projectId,

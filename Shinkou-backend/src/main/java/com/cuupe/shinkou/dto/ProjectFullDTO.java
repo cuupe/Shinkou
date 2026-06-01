@@ -5,6 +5,9 @@ import lombok.experimental.Accessors;
 
 import java.time.LocalDateTime;
 
+/**
+ * 项目完整信息数据传输对象
+ */
 @Data
 @Accessors(chain = true)
 public class ProjectFullDTO {

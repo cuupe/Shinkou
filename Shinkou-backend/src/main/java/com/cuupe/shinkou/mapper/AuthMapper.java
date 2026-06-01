@@ -10,6 +10,11 @@ import java.util.List;
 
 @Mapper
 public interface AuthMapper {
+    /**
+     * 根据邮箱查询用户
+     * @param email 用户邮箱
+     * @return 用户实体对象
+     */
     @Select("""
         SELECT
             id,
@@ -29,6 +34,11 @@ public interface AuthMapper {
         """)
     User findUserByEmail(@Param("email") String email);
 
+    /**
+     * 查询用户的所有活跃工作区
+     * @param userId 用户ID
+     * @return 工作区DTO列表
+     */
     @Select("""
          SELECT
              w.id AS id,
@@ -46,6 +56,11 @@ public interface AuthMapper {
     List<WorkspaceDTO> findActiveWorkspacesByUserId(@Param("userId") Long userId);
 
 
+    /**
+     * 更新用户最后登录时间
+     * @param userId 用户ID
+     * @return 更新的行数
+     */
     @Update("""
         UPDATE users
         SET last_login_at = CURRENT_TIMESTAMP,
@@ -55,6 +70,11 @@ public interface AuthMapper {
     int updateLastLoginAt(@Param("userId") Long userId);
 
 
+    /**
+     * 根据ID查询用户
+     * @param userId 用户ID
+     * @return 用户DTO对象
+     */
     @Select("""
         SELECT
             u.id,
@@ -70,6 +90,11 @@ public interface AuthMapper {
     UserDTO findUserById(@Param("userId") Long userId);
 
 
+    /**
+     * 根据ID查询工作区
+     * @param workspaceId 工作区ID
+     * @return 已激活的工作区DTO
+     */
     @Select("""
         SELECT
             id,
@@ -85,6 +110,12 @@ public interface AuthMapper {
     );
 
 
+    /**
+     * 统计工作区成员数量
+     * @param workspaceId 工作区ID
+     * @param userId 用户ID
+     * @return 成员数量
+     */
     @Select("""
         SELECT COUNT(1)
         FROM workspace_members
@@ -96,6 +127,11 @@ public interface AuthMapper {
             @Param("userId") Long userId
     );
 
+    /**
+     * 插入新用户
+     * @param user 用户实体对象
+     * @return 插入的行数
+     */
     @Insert("""
         INSERT INTO users (
             email,
@@ -124,6 +160,11 @@ public interface AuthMapper {
     @Options(useGeneratedKeys = true, keyProperty = "id")
     int insertUser(User user);
 
+    /**
+     * 标记邀请为已接受
+     * @param id 邀请ID
+     * @return 更新的行数，-1表示已被接受
+     */
     @Update("""
         UPDATE invitations
         SET status = 'ACCEPTED',
@@ -134,6 +175,13 @@ public interface AuthMapper {
         """)
     int markInvitationAccepted(@Param("id") Long id);
 
+    /**
+     * 插入工作区成员
+     * @param workspaceId 工作区ID
+     * @param userId 用户ID
+     * @param role 角色
+     * @return 插入的行数
+     */
     @Insert("""
         INSERT INTO workspace_members (
             workspace_id,
@@ -160,6 +208,11 @@ public interface AuthMapper {
     );
 
 
+    /**
+     * 激活用户（设置密码和状态）
+     * @param user 用户实体对象
+     * @return 更新的行数
+     */
     @Update("""
         UPDATE users
         SET password_hash = #{passwordHash},

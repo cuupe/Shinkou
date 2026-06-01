@@ -9,6 +9,9 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 
+/**
+ * 工作区成员实体类，对应数据库workspace_members表
+ */
 @Data
 @TableName("workspace_members")
 public class WorkspaceMember {

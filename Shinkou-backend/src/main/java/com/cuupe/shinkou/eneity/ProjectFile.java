@@ -7,6 +7,9 @@ import lombok.Data;
 
 import java.time.LocalDateTime;
 
+/**
+ * 项目文件实体类，对应数据库project_files表
+ */
 @Data
 @TableName("project_files")
 public class ProjectFile {

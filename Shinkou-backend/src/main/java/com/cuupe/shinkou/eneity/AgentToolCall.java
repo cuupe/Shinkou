@@ -7,6 +7,9 @@ import lombok.Data;
 
 import java.time.LocalDateTime;
 
+/**
+ * Agent工具调用实体类，对应数据库agent_tool_calls表
+ */
 @Data
 @TableName("agent_tool_calls")
 public class AgentToolCall {

@@ -11,12 +11,22 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
+    /**
+     * 处理业务异常
+     * @param exception 业务异常对象
+     * @return 失败响应结果
+     */
     @ExceptionHandler(BusinessException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public Result<Void> handleBusinessException(BusinessException exception) {
         return Result.fail(exception.getCode(), exception.getMessage());
     }
 
+    /**
+     * 处理参数验证异常
+     * @param exception 方法参数验证异常对象
+     * @return 失败响应结果，包含第一个验证错误信息
+     */
     @ExceptionHandler(MethodArgumentNotValidException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public Result<Void> handleValidationException(MethodArgumentNotValidException exception) {

@@ -13,6 +13,10 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 })
 public class ShinkouApplication {
 
+    /**
+     * 应用程序入口方法
+     * @param args 命令行参数
+     */
     public static void main(String[] args) {
         SpringApplication.run(ShinkouApplication.class, args);
     }

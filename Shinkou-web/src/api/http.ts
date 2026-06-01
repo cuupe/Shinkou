@@ -5,13 +5,10 @@ const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ?? "";
 export const http = axios.create({
   baseURL: API_BASE_URL || "/api",
   timeout: 30000,
+  withCredentials: true,
 });
 
 http.interceptors.request.use((config) => {
-  const token =
-    localStorage.getItem("Shinkou_access_token") ||
-    localStorage.getItem("accessToken");
-  if (token) config.headers.Authorization = `Bearer ${token}`;
   return config;
 });
 
@@ -38,8 +35,15 @@ http.interceptors.response.use(
   (error: AxiosError<any>) => {
     const status = error.response?.status;
     const payload = error.response?.data || {};
-    const message = payload.message || error.message || "请求失败";
+    const isNetworkError =
+      !error.response ||
+      error.code === "ERR_NETWORK" ||
+      error.code === "ECONNABORTED";
+    const message = isNetworkError
+      ? "无法连接后端服务，请确认后端已启动，或在 VITE_API_PROXY_TARGET 中配置正确的 API 地址。"
+      : payload.message || error.message || "请求失败";
     if (status === 401 || payload.code === "AUTH_TOKEN_EXPIRED") {
+      sessionStorage.removeItem("Shinkou_session_active");
       localStorage.removeItem("Shinkou_access_token");
       localStorage.removeItem("Shinkou_user");
       localStorage.removeItem("Shinkou_workspaces");
@@ -68,21 +72,15 @@ export async function request<T>(
   path: string,
   init: RequestInit = {},
 ): Promise<T> {
-  const token =
-    localStorage.getItem("Shinkou_access_token") ||
-    localStorage.getItem("accessToken");
   const headers = new Headers(init.headers as HeadersInit);
 
   if (!headers.has("Content-Type") && init.body) {
     headers.set("Content-Type", "application/json");
   }
 
-  if (token) {
-    headers.set("Authorization", `Bearer ${token}`);
-  }
-
   const response = await fetch(`${API_BASE_URL}${path}`, {
     ...init,
+    credentials: "include",
     headers,
   });
 

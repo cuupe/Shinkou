@@ -16,7 +16,14 @@ import com.cuupe.shinkou.security.JwtTokenProvider;
 import com.cuupe.shinkou.service.AuthRedisService;
 import com.cuupe.shinkou.service.AuthService;
 import com.cuupe.shinkou.util.Data2DTO;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.JwtException;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
+import org.jspecify.annotations.NonNull;
+import org.springframework.http.HttpHeaders;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -35,6 +42,16 @@ public class AuthServiceImpl implements AuthService {
     private final AuthRedisService authRedisService;
     private final AuthProperties authProperties;
 
+    /**
+     * 用户登录处理
+     * 1. 验证邮箱格式和账号锁定状态
+     * 2. 验证密码
+     * 3. 检查账号状态
+     * 4. 生成JWT令牌并保存到Redis
+     * 5. 更新最后登录时间
+     * @param request 登录请求
+     * @return 登录响应，包含访问令牌和用户信息
+     */
     @Override
     @Transactional
     public LoginResponse login(LoginRequest request) {
@@ -86,33 +103,23 @@ public class AuthServiceImpl implements AuthService {
         // 更新登录时间
         authMapper.updateLastLoginAt(user.getId());
 
-        LoginResponse result = new LoginResponse();
-        result.setAccessToken(jwtToken.getAccessToken());
-        result.setTokenType("Bearer");
-        result.setExpiresIn(jwtToken.getExpiresIn());
-        result.setUser(toLoginUserDTO(user));
-        result.setWorkspaces(workspaces);
-
-        return result;
+        return new LoginResponse()
+            .setAccessToken(jwtToken.getAccessToken())
+            .setTokenType("Bearer")
+            .setExpiresIn(jwtToken.getExpiresIn())
+            .setUser(Data2DTO.user2UserDTO(user))
+            .setWorkspaces(workspaces);
     }
 
+    /**
+     * 获取当前登录用户的详细信息
+     * @param authentication Spring Security认证对象
+     * @return 用户详细信息，包含工作区列表
+     */
     @Transactional
     @Override
     public UserMe me(Authentication authentication) {
-        if (authentication == null || !authentication.isAuthenticated()) {
-            throw new BusinessException(
-                    ResultCode.AUTH_UNAUTHORIZED.name(),
-                    "未登录或没有认证信息"
-            );
-        }
-
-        Object principal = authentication.getPrincipal();
-        if(!(principal instanceof Long id)){
-            throw new BusinessException(
-                    ResultCode.AUTH_TOKEN_INVALID.name(),
-                    "Token 无效"
-            );
-        }
+        Long id = currentUser(authentication);
 
 
         UserDTO user = authMapper.findUserById(id);
@@ -133,6 +140,16 @@ public class AuthServiceImpl implements AuthService {
     }
 
 
+    /**
+     * 激活用户账号（通过邀请链接）
+     * 1. 验证邀请链接有效性
+     * 2. 创建新用户或激活现有用户
+     * 3. 将用户添加到工作区
+     * 4. 标记邀请为已接受
+     * 5. 生成JWT令牌
+     * @param request 激活请求
+     * @return 激活响应，包含访问令牌和已激活的工作区
+     */
     @Transactional
     @Override
     public ActivateResponse activate(ActivateRequest request) {
@@ -226,6 +243,31 @@ public class AuthServiceImpl implements AuthService {
                 .setAccessToken(jwtToken.getAccessToken());
     }
 
+    /**
+     * 用户登出处理
+     * 1. 从请求中解析Token ID
+     * 2. 从Redis中删除令牌
+     * @param authentication Spring Security认证对象
+     * @param request HTTP请求对象
+     * @return 登出结果消息
+     */
+    @Override
+    public String logout(Authentication authentication, HttpServletRequest request) {
+        Long userId = currentUser(authentication);
+
+        String tokenId = resolveToken(request);
+        if(tokenId == null || tokenId.isBlank()){
+            throw new BusinessException(
+                    ResultCode.AUTH_TOKEN_INVALID.name(),
+                    "Token 无效"
+            );
+        }
+
+        authRedisService.logout(userId, tokenId);
+
+        return "success";
+    }
+
     private String normalizeEmail(String email) {
         return email == null ? null : email.trim().toLowerCase(Locale.ROOT);
     }
@@ -260,6 +302,10 @@ public class AuthServiceImpl implements AuthService {
         }
     }
 
+    /**
+     * 验证用户状态
+     * @param user 用户实体对象
+     */
     private void validateUserStatus(User user) {
         String status = user.getStatus();
 
@@ -292,6 +338,13 @@ public class AuthServiceImpl implements AuthService {
         }
     }
 
+    /**
+     * 激活存在的用户到工作区
+     * @param user 用户实体对象
+     * @param invitation 邀请 DTO 对象
+     * @param rawPassword 原始密码
+     * @return 用户实体对象
+     */
     private User activateExistingUser(User user, InvitationDTO invitation, String rawPassword) {
         if ("DISABLED".equals(user.getStatus())) {
             throw new BusinessException(
@@ -313,31 +366,41 @@ public class AuthServiceImpl implements AuthService {
             return user;
         }
 
-        user.setPasswordHash(passwordEncoder.encode(rawPassword));
-        user.setName(invitation.getName());
-        user.setDepartment(invitation.getDepartment());
-        user.setPosition(invitation.getPosition());
-        user.setStatus("ACTIVE");
+        user.setPasswordHash(passwordEncoder.encode(rawPassword))
+            .setName(invitation.getName())
+            .setDepartment(invitation.getDepartment())
+            .setPosition(invitation.getPosition())
+            .setStatus("ACTIVE");
 
         authMapper.activateUser(user);
 
         return user;
     }
 
+    /**
+     * 通过邀请创建用户
+     * @param invitation 邀请 DTO 对象
+     * @param rawPassword 原始密码
+     * @return 创建的用户实体对象
+     */
     private User createUserFromInvitation(InvitationDTO invitation, String rawPassword) {
-        User user = new User();
-        user.setEmail(normalizeEmail(invitation.getEmail()));
-        user.setPasswordHash(passwordEncoder.encode(rawPassword));
-        user.setName(invitation.getName());
-        user.setDepartment(invitation.getDepartment());
-        user.setPosition(invitation.getPosition());
-        user.setStatus("ACTIVE");
+        User user = new User()
+            .setEmail(normalizeEmail(invitation.getEmail()))
+            .setPasswordHash(passwordEncoder.encode(rawPassword))
+            .setName(invitation.getName())
+            .setDepartment(invitation.getDepartment())
+            .setPosition(invitation.getPosition())
+            .setStatus("ACTIVE");
 
         authMapper.insertUser(user);
 
         return user;
     }
 
+    /**
+     * 验证邀请是否有效
+     * @param invitation 邀请 DTO 实体
+     */
     private void validateInvitation(InvitationDTO invitation) {
         String status = invitation.getStatus();
 
@@ -371,6 +434,10 @@ public class AuthServiceImpl implements AuthService {
         }
     }
 
+    /**
+     * 严格的激活请求验证
+     * @param request 激活请求实体
+     */
     private void validateActivateRequest(ActivateRequest request) {
         if (request == null) {
             throw new BusinessException(
@@ -400,40 +467,76 @@ public class AuthServiceImpl implements AuthService {
             );
         }
 
-        if (!request.getPassword().equals(request.getConfirmPassword())) {
+        String password = request.getPassword();
+
+        if (!password.equals(request.getConfirmPassword())) {
             throw new BusinessException(
                     ResultCode.VALIDATION_ERROR.name(),
                     "两次输入的密码不一致"
             );
         }
 
-        if (request.getPassword().length() < 8) {
+        if (password.length() < 8 || password.length() > 32) {
             throw new BusinessException(
                     ResultCode.VALIDATION_ERROR.name(),
-                    "密码长度不能少于 8 位"
+                    "密码长度必须为 8-32 位"
             );
         }
 
-        boolean hasLetter = request.getPassword().matches(".*[A-Za-z].*");
-        boolean hasNumber = request.getPassword().matches(".*\\d.*");
+        boolean hasUppercase = password.matches(".*[A-Z].*");
+        boolean hasLowercase = password.matches(".*[a-z].*");
+        boolean hasNumber = password.matches(".*\\d.*");
+        boolean hasSpecial = password.matches(".*[!@#$%^&*].*");
 
-        if (!hasLetter || !hasNumber) {
+        if (!hasUppercase || !hasLowercase || !hasNumber || !hasSpecial) {
             throw new BusinessException(
                     ResultCode.VALIDATION_ERROR.name(),
-                    "密码必须同时包含字母和数字"
+                    "密码必须包含大小写字母、数字和特殊字符（如 !@#$%^&*）"
             );
         }
     }
 
-    private UserDTO toLoginUserDTO(User user) {
-        UserDTO dto = new UserDTO();
-        dto.setId(user.getId());
-        dto.setEmail(user.getEmail());
-        dto.setName(user.getName());
-        dto.setAvatarUrl(user.getAvatarUrl());
-        dto.setDepartment(user.getDepartment());
-        dto.setPosition(user.getPosition());
-        dto.setStatus(user.getStatus());
-        return dto;
+    /**
+     * 获取当前用户 id，兼有验证用户的作用
+     * @param authentication 验证体
+     * @return 用户 ID
+     */
+    private @NonNull Long currentUser(Authentication authentication) {
+        if (authentication == null || !authentication.isAuthenticated()) {
+            throw new BusinessException(
+                    ResultCode.AUTH_UNAUTHORIZED.name(),
+                    "未登录或没有认证信息"
+            );
+        }
+
+        Object principal = authentication.getPrincipal();
+        if(!(principal instanceof Long id)){
+            throw new BusinessException(
+                    ResultCode.AUTH_TOKEN_INVALID.name(),
+                    "Token 无效"
+            );
+        }
+        return id;
     }
+
+    private String resolveToken(HttpServletRequest request) {
+        String authorization = request.getHeader(HttpHeaders.AUTHORIZATION);
+
+        if (authorization != null && authorization.startsWith("Bearer ")) {
+            return authorization.substring("Bearer ".length());
+        }
+
+        if (request.getCookies() == null) {
+            return null;
+        }
+
+        for (Cookie cookie : request.getCookies()) {
+            if ("access_token".equals(cookie.getName())) {
+                return cookie.getValue();
+            }
+        }
+
+        return null;
+    }
+
 }

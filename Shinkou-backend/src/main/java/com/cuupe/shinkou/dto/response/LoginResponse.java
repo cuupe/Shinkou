@@ -7,6 +7,9 @@ import lombok.experimental.Accessors;
 
 import java.util.List;
 
+/**
+ * 登录响应数据传输对象
+ */
 @Data
 @Accessors(chain = true)
 public class LoginResponse{

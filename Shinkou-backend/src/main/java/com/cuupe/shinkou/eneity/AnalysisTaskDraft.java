@@ -7,6 +7,9 @@ import lombok.Data;
 
 import java.time.LocalDateTime;
 
+/**
+ * 分析任务草稿实体类，对应数据库analysis_task_drafts表
+ */
 @Data
 @TableName("analysis_task_drafts")
 public class AnalysisTaskDraft {

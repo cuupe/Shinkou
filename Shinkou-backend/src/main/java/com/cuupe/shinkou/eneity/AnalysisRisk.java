@@ -7,6 +7,9 @@ import lombok.Data;
 
 import java.time.LocalDateTime;
 
+/**
+ * 分析风险实体类，对应数据库analysis_risks表
+ */
 @Data
 @TableName("analysis_risks")
 public class AnalysisRisk {

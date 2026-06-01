@@ -32,9 +32,9 @@ export interface WorkspaceDetail extends WorkspaceBrief {
   updatedAt?: string;
 }
 export interface LoginResponse {
-  accessToken: string;
-  tokenType: string;
-  expiresIn: number;
+  accessToken?: string;
+  tokenType?: string;
+  expiresIn?: number;
   user: CurrentUser;
   workspaces: WorkspaceBrief[];
 }

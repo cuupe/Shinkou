@@ -15,6 +15,12 @@ public class AuthRedisServiceImpl implements AuthRedisService {
     private final StringRedisTemplate stringRedisTemplate;
     private final AuthProperties authProperties;
 
+    /**
+     * 保存登录令牌到Redis
+     * @param userId 用户ID
+     * @param tokenId 令牌ID
+     * @param expiresInSeconds 过期时间（秒）
+     */
     @Override
     public void saveLoginToken(Long userId, String tokenId, long expiresInSeconds) {
         stringRedisTemplate.opsForValue().set(
@@ -24,6 +30,24 @@ public class AuthRedisServiceImpl implements AuthRedisService {
         );
     }
 
+    /**
+     * 登出用户，删除Redis中的令牌
+     * @param userId 用户ID
+     * @param tokenId 令牌ID
+     * @return 是否成功删除
+     */
+    @Override
+    public boolean logout(Long userId, String tokenId) {
+        stringRedisTemplate.delete(AuthRedisKeys.tokenKey(userId, tokenId));
+        return true;
+    }
+
+    /**
+     * 检查Redis中是否存在有效的登录令牌
+     * @param userId 用户ID
+     * @param tokenId 令牌ID
+     * @return 是否存在有效令牌
+     */
     @Override
     public boolean hasLoginToken(Long userId, String tokenId) {
         return Boolean.TRUE.equals(
@@ -31,6 +55,11 @@ public class AuthRedisServiceImpl implements AuthRedisService {
         );
     }
 
+    /**
+     * 检查邮箱是否被锁定登录
+     * @param email 用户邮箱
+     * @return 是否被锁定
+     */
     @Override
     public boolean isLoginLocked(String email) {
         return Boolean.TRUE.equals(
@@ -38,11 +67,21 @@ public class AuthRedisServiceImpl implements AuthRedisService {
         );
     }
 
+    /**
+     * 获取登录锁定的剩余时间
+     * @param email 用户邮箱
+     * @return 剩余时间（秒），null表示未锁定
+     */
     @Override
     public Long getLoginLockTtl(String email) {
         return stringRedisTemplate.getExpire(AuthRedisKeys.loginLockKey(email));
     }
 
+    /**
+     * 增加登录失败次数
+     * @param email 用户邮箱
+     * @return 当前失败次数
+     */
     @Override
     public long increaseLoginFailCount(String email) {
         String key = AuthRedisKeys.loginFailKey(email);
@@ -59,6 +98,10 @@ public class AuthRedisServiceImpl implements AuthRedisService {
         return count == null ? 0L : count;
     }
 
+    /**
+     * 锁定用户登录（达到最大失败次数后）
+     * @param email 用户邮箱
+     */
     @Override
     public void lockLogin(String email) {
         stringRedisTemplate.opsForValue().set(
@@ -68,6 +111,10 @@ public class AuthRedisServiceImpl implements AuthRedisService {
         );
     }
 
+    /**
+     * 清除登录失败记录和锁定状态
+     * @param email 用户邮箱
+     */
     @Override
     public void clearLoginFail(String email) {
         stringRedisTemplate.delete(AuthRedisKeys.loginFailKey(email));

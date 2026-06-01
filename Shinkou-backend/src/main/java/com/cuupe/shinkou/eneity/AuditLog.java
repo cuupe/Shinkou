@@ -7,6 +7,9 @@ import lombok.Data;
 
 import java.time.LocalDateTime;
 
+/**
+ * 审计日志实体类，对应数据库audit_logs表
+ */
 @Data
 @TableName("audit_logs")
 public class AuditLog {

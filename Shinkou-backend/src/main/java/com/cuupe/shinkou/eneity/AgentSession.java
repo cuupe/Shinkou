@@ -7,6 +7,9 @@ import lombok.Data;
 
 import java.time.LocalDateTime;
 
+/**
+ * Agent会话实体类，对应数据库agent_sessions表
+ */
 @Data
 @TableName("agent_sessions")
 public class AgentSession {

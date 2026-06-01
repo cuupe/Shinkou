@@ -19,6 +19,10 @@ public class RedissonConfig {
     @Value("${spring.data.redis.password:}")
     private String password;
 
+    /**
+     * 创建Redisson客户端Bean
+     * @return RedissonClient实例
+     */
     @Bean(destroyMethod = "shutdown")
     public RedissonClient redissonClient() {
         Config config = new Config();

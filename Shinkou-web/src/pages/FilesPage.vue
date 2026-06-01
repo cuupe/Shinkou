@@ -100,47 +100,47 @@ function goAnalysis() {
 
 <template>
   <section class="space-y-5">
-    <div class="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+    <div class="grid gap-4 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
       <div class="card p-5">
-        <div class="flex items-center justify-between gap-3">
-          <div>
-            <div class="text-sm font-semibold text-slate-500">项目文件</div>
+        <div class="flex min-w-0 items-center justify-between gap-3">
+          <div class="min-w-0">
+            <div class="one-line text-sm font-semibold text-slate-500">项目文件</div>
             <div class="mt-2 text-3xl font-black text-slate-950">
               {{ files.length }}
             </div>
           </div>
           <div
-            class="grid h-12 w-12 place-items-center rounded-xl bg-brand-50 text-brand-600"
+            class="grid h-12 w-12 shrink-0 place-items-center rounded-xl bg-brand-50 text-brand-600"
           >
             <FileCode2 :size="24" />
           </div>
         </div>
       </div>
       <div class="card p-5">
-        <div class="flex items-center justify-between gap-3">
-          <div>
-            <div class="text-sm font-semibold text-slate-500">已索引</div>
+        <div class="flex min-w-0 items-center justify-between gap-3">
+          <div class="min-w-0">
+            <div class="one-line text-sm font-semibold text-slate-500">已索引</div>
             <div class="mt-2 text-3xl font-black text-slate-950">
               {{ indexedCount }}
             </div>
           </div>
           <div
-            class="grid h-12 w-12 place-items-center rounded-xl bg-emerald-50 text-emerald-600"
+            class="grid h-12 w-12 shrink-0 place-items-center rounded-xl bg-emerald-50 text-emerald-600"
           >
             <Database :size="24" />
           </div>
         </div>
       </div>
       <div class="card p-5">
-        <div class="flex items-center justify-between gap-3">
-          <div>
-            <div class="text-sm font-semibold text-slate-500">语言数</div>
+        <div class="flex min-w-0 items-center justify-between gap-3">
+          <div class="min-w-0">
+            <div class="one-line text-sm font-semibold text-slate-500">语言数</div>
             <div class="mt-2 text-3xl font-black text-slate-950">
               {{ languageCount }}
             </div>
           </div>
           <div
-            class="grid h-12 w-12 place-items-center rounded-xl bg-indigo-50 text-indigo-600"
+            class="grid h-12 w-12 shrink-0 place-items-center rounded-xl bg-indigo-50 text-indigo-600"
           >
             <Code2 :size="24" />
           </div>
@@ -149,9 +149,9 @@ function goAnalysis() {
       <div
         class="card flex flex-col justify-between gap-4 p-5 sm:flex-row sm:items-center xl:flex-col xl:items-stretch"
       >
-        <div>
-          <div class="text-sm font-semibold text-slate-500">上传代码 ZIP</div>
-          <div class="mt-2 text-sm font-bold text-slate-700">
+        <div class="min-w-0">
+          <div class="one-line text-sm font-semibold text-slate-500">上传代码 ZIP</div>
+          <div class="one-line mt-2 text-sm font-bold text-slate-700">
             {{ uploading ? "上传处理中..." : "支持重新索引" }}
           </div>
         </div>
@@ -164,7 +164,7 @@ function goAnalysis() {
     </div>
 
     <div class="card p-4">
-      <div class="grid gap-3 lg:grid-cols-[1fr_auto_auto_auto]">
+      <div class="grid gap-3 lg:grid-cols-[minmax(0,1fr)_auto_auto] 2xl:grid-cols-[minmax(0,1fr)_auto_auto_auto]">
         <div class="relative">
           <Search
             :size="18"
@@ -185,7 +185,7 @@ function goAnalysis() {
           <RefreshCw :size="18" />
           刷新索引
         </button>
-        <button class="btn btn-soft" @click="goAnalysis">
+        <button class="btn btn-soft lg:col-span-3 2xl:col-span-1" @click="goAnalysis">
           <BrainCircuit :size="18" />
           发起需求分析
         </button>
@@ -212,7 +212,7 @@ function goAnalysis() {
       正在加载文件索引...
     </div>
     <EmptyState v-else-if="error" title="文件加载失败" :description="error" />
-    <div v-else class="grid gap-5 xl:grid-cols-[320px_minmax(0,1fr)]">
+    <div v-else class="grid gap-5 2xl:grid-cols-[320px_minmax(0,1fr)]">
       <aside class="card max-h-[720px] overflow-auto p-4 scrollbar-thin">
         <h3 class="mb-3 text-base font-black text-slate-950">文件树</h3>
         <FileTree

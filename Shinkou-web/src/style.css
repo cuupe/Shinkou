@@ -27,6 +27,12 @@
   box-sizing: border-box;
 }
 
+*,
+*::before,
+*::after {
+  min-width: 0;
+}
+
 html {
   min-width: 320px;
 }
@@ -67,6 +73,8 @@ a {
 
 .btn {
   display: inline-flex;
+  max-width: 100%;
+  min-width: 0;
   min-height: 2.5rem;
   align-items: center;
   justify-content: center;
@@ -80,7 +88,14 @@ a {
     border-color 0.15s ease,
     color 0.15s ease,
     box-shadow 0.15s ease;
+  overflow: hidden;
+  text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+.btn > svg,
+.icon-btn > svg {
+  flex: 0 0 auto;
 }
 
 .btn:disabled {
@@ -118,6 +133,7 @@ a {
 
 .icon-btn {
   display: inline-grid;
+  flex: 0 0 auto;
   width: 2.5rem;
   height: 2.5rem;
   place-items: center;
@@ -148,6 +164,7 @@ a {
 }
 
 .card {
+  min-width: 0;
   border: 1px solid #e2e8f0;
   background: #fff;
   border-radius: 0.75rem;
@@ -183,6 +200,24 @@ a {
   border-top: 1px solid #e2e8f0;
   color: #334155;
   vertical-align: top;
+  overflow-wrap: anywhere;
+}
+
+.table-td .mono,
+.mono.table-td {
+  overflow-wrap: anywhere;
+}
+
+.responsive-title {
+  overflow-wrap: anywhere;
+  line-height: 1.2;
+}
+
+.one-line {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .line-clamp-2 {

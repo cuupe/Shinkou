@@ -10,6 +10,9 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 
+/**
+ * 工作区实体类，对应数据库workspaces表
+ */
 @Data
 @TableName("workspaces")
 public class Workspace {

@@ -15,6 +15,11 @@ import org.springframework.web.bind.annotation.RestController;
 public class InvitationController {
     private final InvitationService invitationService;
 
+    /**
+     * 验证邀请链接的有效性
+     * @param token 邀请令牌
+     * @return 邀请信息 DTO
+     */
     @GetMapping("/{token}")
     public Result<InvitationDTO> tokenCheck(@PathVariable String token){
         return Result.success(invitationService.tokenCheck(token));

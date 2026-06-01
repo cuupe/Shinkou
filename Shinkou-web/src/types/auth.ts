@@ -22,9 +22,9 @@ export interface WorkspaceSummary {
 }
 
 export interface AuthResponse {
-  accessToken: string;
-  tokenType: "Bearer";
-  expiresIn: number;
+  accessToken?: string;
+  tokenType?: "Bearer";
+  expiresIn?: number;
   user: User;
   workspaces: WorkspaceSummary[];
   activatedWorkspace?: WorkspaceSummary;

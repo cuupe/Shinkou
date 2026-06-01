@@ -8,6 +8,9 @@ import lombok.Data;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
+/**
+ * 分析影响文件实体类，对应数据库analysis_affected_files表
+ */
 @Data
 @TableName("analysis_affected_files")
 public class AnalysisAffectedFile {
