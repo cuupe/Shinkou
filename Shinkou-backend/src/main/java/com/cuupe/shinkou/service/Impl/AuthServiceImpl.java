@@ -121,7 +121,6 @@ public class AuthServiceImpl implements AuthService {
     public UserMe me(Authentication authentication) {
         Long id = currentUser(authentication);
 
-
         UserDTO user = authMapper.findUserById(id);
         if (user == null) {
             throw new BusinessException(
@@ -255,8 +254,26 @@ public class AuthServiceImpl implements AuthService {
     public String logout(Authentication authentication, HttpServletRequest request) {
         Long userId = currentUser(authentication);
 
-        String tokenId = resolveToken(request);
-        if(tokenId == null || tokenId.isBlank()){
+        String accessToken = resolveAccessToken(request);
+        if (accessToken == null || accessToken.isBlank()) {
+            throw new BusinessException(
+                    ResultCode.AUTH_UNAUTHORIZED.name(),
+                    "未登录或登录已过期"
+            );
+        }
+
+        Claims claims;
+        try {
+            claims = jwtTokenProvider.parseClaims(accessToken);
+        } catch (JwtException | IllegalArgumentException e) {
+            throw new BusinessException(
+                    ResultCode.AUTH_TOKEN_INVALID.name(),
+                    "Token 无效"
+            );
+        }
+
+        String tokenId = claims.getId();
+        if (tokenId == null || tokenId.isBlank()) {
             throw new BusinessException(
                     ResultCode.AUTH_TOKEN_INVALID.name(),
                     "Token 无效"
@@ -519,7 +536,7 @@ public class AuthServiceImpl implements AuthService {
         return id;
     }
 
-    private String resolveToken(HttpServletRequest request) {
+    private String resolveAccessToken(HttpServletRequest request) {
         String authorization = request.getHeader(HttpHeaders.AUTHORIZATION);
 
         if (authorization != null && authorization.startsWith("Bearer ")) {

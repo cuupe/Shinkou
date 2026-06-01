@@ -80,7 +80,6 @@ public class AuthController {
         activateResponse.setAccessToken(null)
                 .setTokenType(null);
 
-
         return Result.success(activateResponse);
     }
 
