@@ -60,7 +60,7 @@ public class WorkspaceController {
      * 获取指定工作区下的特定项目详情
      * @param workspaceId 工作区 ID
      * @param projectId 项目 ID
-     * @param authentication Spring Security认证对象
+     * @param authentication Spring Security 认证对象
      * @return 项目完整信息 DTO
      */
     @GetMapping("/{workspaceId}/projects/{projectId}")
