@@ -8,6 +8,15 @@
 [![Java](https://img.shields.io/badge/Java-21-orange)](#环境要求)
 [![License](https://img.shields.io/badge/license-MIT-green)](LICENSE)
 
+
+> [!WARNING]
+> 本项目已于 2026 年 8 月停止维护，不再接受 Issue 和 Pull Request。
+> 
+> 现有代码仅供参考，不继续开发，同类型项目迁移至其他Shinkou系列。
+>
+> 该项目废弃是因为重复度高，用这个不如考虑codex等智能体平台，开发也不符合预期。
+> 考虑种种，决定开辟新项目。
+
 Shinkou 是一个面向研发团队的需求变更影响分析平台。它帮助团队把“一个需求会影响什么”这件事结构化：从代码文件、接口、数据模型、技术风险，到任务拆解、测试建议和分析报告。
 
 它不定位为 IDE 编码助手，也不直接替代 Cursor、Claude Code 或 GitHub Copilot。Shinkou 更适合需求评审、研发协作、变更风险评估和团队级研发知识沉淀。
